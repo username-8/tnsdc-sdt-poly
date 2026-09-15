@@ -1,0 +1,2204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VTPT / Naan Mudhalvan — Polytechnic Skill Training Delivery Map</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F4F6F7; --surface:#FFFFFF; --ink:#16232E; --muted:#56636F; --rule:#D3DADF; --rule-soft:#E6EBEE;
+  --teal:#0D5C63; --teal-soft:#E3EFF0;
+  --D:#3355A0; --V:#23724A; --C:#B3261E; --G:#955800; --I:#6A4C9C;
+  --D-bg:#E8EDF8; --V-bg:#E4F2EA; --C-bg:#FBE9E7; --G-bg:#FBF0DD; --I-bg:#EFEAF6;
+  --font:"Public Sans", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --measure:74ch;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:72px}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--font);font-size:16px;line-height:1.6;font-variant-numeric:tabular-nums}
+a{color:var(--teal)}
+:focus-visible{outline:3px solid var(--teal);outline-offset:2px;border-radius:3px}
+
+/* ---------- top bar with evidence filter ---------- */
+.bar{position:sticky;top:0;z-index:20;background:rgba(244,246,247,.94);backdrop-filter:blur(6px);border-bottom:1px solid var(--rule)}
+.bar-inner{max-width:1360px;margin:0 auto;padding:10px 24px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.bar-title{font-weight:700;font-size:15px;margin-right:auto;white-space:nowrap}
+.bar-title span{color:var(--muted);font-weight:500}
+.filter{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.filter-label{font-size:13px;color:var(--muted);margin-right:4px}
+.fbtn{font:inherit;font-size:13px;font-weight:600;border:1px solid var(--rule);background:var(--surface);color:var(--ink);border-radius:999px;padding:4px 11px 4px 5px;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.fbtn .mark{margin:0}
+.fbtn .count{color:var(--muted);font-weight:500}
+.fbtn[aria-pressed="true"]{border-color:currentColor;box-shadow:inset 0 0 0 1px currentColor}
+.fbtn[data-k="D"][aria-pressed="true"]{color:var(--D);background:var(--D-bg)}
+.fbtn[data-k="V"][aria-pressed="true"]{color:var(--V);background:var(--V-bg)}
+.fbtn[data-k="C"][aria-pressed="true"]{color:var(--C);background:var(--C-bg)}
+.fbtn[data-k="G"][aria-pressed="true"]{color:var(--G);background:var(--G-bg)}
+.fbtn[data-k="I"][aria-pressed="true"]{color:var(--I);background:var(--I-bg)}
+.fclear{font:inherit;font-size:13px;background:none;border:0;color:var(--teal);text-decoration:underline;cursor:pointer;padding:4px}
+.fclear[hidden]{display:none}
+.menu-btn{display:none;font:inherit;font-size:14px;font-weight:600;border:1px solid var(--rule);background:var(--surface);border-radius:6px;padding:5px 10px;cursor:pointer}
+
+/* ---------- evidence marks ---------- */
+.mark{display:inline-block;min-width:1.55em;text-align:center;font-size:.72em;font-weight:800;line-height:1.55em;border-radius:4px;margin:0 .3em 0 0;vertical-align:.12em;color:#fff;cursor:help}
+.mark-D{background:var(--D)} .mark-V{background:var(--V)} .mark-C{background:var(--C)} .mark-G{background:var(--G)} .mark-I{background:var(--I)}
+.mark-extra{font-size:.8em;font-weight:600;color:var(--muted);margin-right:.35em}
+body.filtering [data-marks], body.filtering tbody tr{transition:opacity .15s}
+body.filtering tbody tr:not(.hit), body.filtering .doc [data-marks]:not(.hit){opacity:.22}
+body.filtering tbody tr.hit{background:#FFFBE6}
+
+/* ---------- hero ---------- */
+.hero{max-width:1360px;margin:0 auto;padding:56px 24px 40px}
+.hero-top{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:48px;align-items:end}
+.kicker{font-size:15px;color:var(--teal);font-weight:600;margin:0 0 12px}
+.hero h1{font-size:clamp(34px,4.6vw,60px);line-height:1.04;letter-spacing:-.025em;font-weight:800;margin:0 0 18px;max-width:18ch}
+.hero-lede{font-size:19px;line-height:1.5;color:var(--muted);max-width:56ch;margin:0}
+.status{background:var(--surface);border:1px solid var(--rule);border-left:4px solid var(--C);border-radius:6px;padding:16px 18px}
+.status-state{font-weight:700;margin:0 0 4px}
+.status p{margin:0 0 10px;font-size:14px;color:var(--muted)}
+.status a{font-weight:600;font-size:14px}
+.meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:4px 32px;margin:32px 0 0;padding:16px 0 0;border-top:1px solid var(--rule);font-size:14px}
+.meta div{padding:6px 0}
+.meta dt{color:var(--muted);font-size:13px}
+.meta dd{margin:0;font-weight:500}
+
+/* stage rail — the signature element */
+.rail-wrap{margin-top:44px}
+.rail-caption{display:flex;justify-content:space-between;align-items:baseline;gap:16px;margin-bottom:12px;flex-wrap:wrap}
+.rail-caption h2{font-size:17px;margin:0;font-weight:700}
+.rail-caption p{margin:0;font-size:14px;color:var(--muted)}
+.rail{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(9,minmax(0,1fr));gap:0;position:relative}
+.rail-stage a{display:flex;flex-direction:column;height:100%;padding:14px 12px 16px;text-decoration:none;color:var(--ink);background:var(--surface);border:1px solid var(--rule);border-right:0;position:relative}
+.rail-stage:first-child a{border-radius:8px 0 0 0}
+.rail-stage:last-child a{border-right:1px solid var(--rule);border-radius:0 8px 0 0}
+.rail-stage a:hover{background:var(--teal-soft)}
+.rail-stage a::after{content:"";position:absolute;right:-7px;top:22px;width:12px;height:12px;background:inherit;border-top:1px solid var(--rule);border-right:1px solid var(--rule);transform:rotate(45deg);z-index:2}
+.rail-stage:last-child a::after{display:none}
+.rail-code{font-size:28px;font-weight:800;letter-spacing:-.02em;color:var(--teal);line-height:1}
+.rail-name{font-weight:700;font-size:14px;line-height:1.25;margin-top:10px}
+.rail-sub{font-size:12.5px;color:var(--muted);line-height:1.35;margin-top:4px}
+.rail-flag{margin-top:auto;padding-top:10px;font-size:12px;font-weight:700;color:var(--C)}
+.is-risk a{box-shadow:inset 0 4px 0 var(--C)}
+.is-risk .rail-code{color:var(--C)}
+.loop{position:relative;height:46px;border:1px solid var(--rule);border-top:0;border-radius:0 0 8px 8px;background:
+  linear-gradient(var(--surface),var(--surface));display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--muted)}
+.loop svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.loop span{position:relative;background:var(--surface);padding:0 12px;font-weight:600;color:var(--teal)}
+.rework{margin:10px 0 0;font-size:13.5px;color:var(--muted)}
+.rework b{color:var(--C)}
+
+/* ---------- layout ---------- */
+.layout{max-width:1360px;margin:0 auto;padding:0 24px 80px;display:grid;grid-template-columns:250px minmax(0,1fr);gap:48px}
+.toc{position:sticky;top:64px;align-self:start;max-height:calc(100vh - 80px);overflow:auto;padding:24px 0 24px;font-size:14px}
+.toc-head{font-weight:700;margin:0 0 10px;font-size:14px}
+.toc ol{list-style:none;margin:0;padding:0}
+.toc > ol > li{margin:1px 0}
+.toc a{display:flex;gap:10px;padding:5px 10px;border-radius:5px;text-decoration:none;color:var(--muted);line-height:1.35}
+.toc a:hover{background:var(--surface);color:var(--ink)}
+.toc a.active{background:var(--surface);color:var(--ink);font-weight:600;box-shadow:inset 3px 0 0 var(--teal)}
+.toc-n{min-width:1.3em;color:var(--teal);font-weight:600}
+.toc-sub{padding-left:32px!important}
+.toc-sub a{padding:3px 8px;font-size:13px}
+
+.doc{min-width:0;padding-top:8px}
+.doc-section{background:var(--surface);border:1px solid var(--rule-soft);border-radius:10px;padding:36px 44px 40px;margin:0 0 24px}
+.doc h2{font-size:30px;letter-spacing:-.02em;line-height:1.15;margin:0 0 20px;font-weight:800}
+.doc h3{font-size:22px;letter-spacing:-.01em;margin:44px 0 12px;font-weight:700;padding-top:22px;border-top:1px solid var(--rule-soft)}
+.doc h3[id^="stage-s"]{font-size:26px;border-top:3px solid var(--teal)}
+.doc h4{font-size:17px;margin:30px 0 8px;font-weight:700}
+.doc p,.doc ul,.doc ol{max-width:var(--measure)}
+.doc li{margin:4px 0}
+.doc code{font-family:ui-monospace,"Cascadia Code",Consolas,monospace;font-size:.86em;background:var(--paper);border:1px solid var(--rule-soft);padding:1px 5px;border-radius:4px}
+
+.table-wrap{overflow-x:auto;margin:14px 0 22px;border:1px solid var(--rule);border-radius:8px}
+table{border-collapse:collapse;width:100%;font-size:14.5px;line-height:1.5}
+th{text-align:left;background:var(--paper);font-weight:700;padding:9px 14px;border-bottom:1px solid var(--rule);white-space:nowrap}
+td{padding:9px 14px;border-top:1px solid var(--rule-soft);vertical-align:top}
+tbody tr:first-child td{border-top:0}
+td:first-child{white-space:nowrap}
+td strong.sid{font-weight:700;color:var(--teal)}
+tr.oq-row td:first-child .oq{font-weight:700;color:var(--C)}
+tr:target{background:#FFF4CC}
+a.oq{font-weight:600;white-space:nowrap}
+
+.callout{margin:20px 0;padding:14px 18px;border-radius:8px;max-width:var(--measure);border:1px solid}
+.callout p{margin:6px 0}
+.callout-note{background:var(--I-bg);border-color:#D9CFEA}
+.callout-dictated{background:var(--D-bg);border-color:#CAD5EE}
+.callout-conflict{background:var(--C-bg);border-color:#EEC3BD;border-left:5px solid var(--C);max-width:none}
+
+pre.code{background:#1C2A35;color:#DCE6EC;padding:18px 20px;border-radius:8px;overflow-x:auto;font-size:13px;line-height:1.55;max-width:none}
+pre.code code{background:none;border:0;padding:0;color:inherit;font-size:inherit}
+
+.diagram{margin:14px 0 26px;border:1px solid var(--rule);border-radius:8px;padding:20px;overflow-x:auto;background:#FBFCFC}
+.diagram pre.mermaid{margin:0;display:flex;justify-content:center;font-family:var(--font)}
+.diagram pre.mermaid:not([data-processed]){white-space:pre;color:var(--muted);font-size:12px;justify-content:flex-start}
+.diagram svg{max-width:100%;height:auto}
+.diagram-tools{display:flex;justify-content:flex-end;margin:-8px -8px 8px}
+.zbtn{font:inherit;font-size:13px;font-weight:600;border:1px solid var(--rule);background:var(--surface);color:var(--teal);border-radius:6px;padding:4px 10px;cursor:pointer}
+.diagram.zoomed pre.mermaid{display:block}
+.diagram.zoomed svg{max-width:none!important;flex-shrink:0}
+.diagram-note{font-size:13px;color:var(--muted);margin:0 0 10px}
+
+.foot{max-width:1360px;margin:0 auto;padding:0 24px 48px;color:var(--muted);font-size:13px}
+
+/* ---------- responsive ---------- */
+@media (max-width:1100px){
+  .rail{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .rail-stage a{border-right:1px solid var(--rule);border-radius:0!important;margin:-1px 0 0 -1px}
+  .rail-stage a::after{display:none}
+  .loop{border-top:1px solid var(--rule);border-radius:0 0 8px 8px;margin-top:-1px}
+  .hero-top{grid-template-columns:1fr}
+}
+@media (max-width:900px){
+  .layout{grid-template-columns:1fr}
+  .toc{display:none;position:fixed;inset:0;max-height:none;background:var(--paper);z-index:15;padding:120px 24px 24px}
+  body.toc-open .toc{display:block}
+  .menu-btn{display:inline-block}
+  .doc-section{padding:24px 18px 28px}
+  .doc h2{font-size:25px}
+}
+@media (max-width:560px){
+  .rail{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .hero{padding-top:32px}
+  .bar-title span{display:none}
+  .filter{flex-wrap:nowrap;overflow-x:auto;width:100%;padding-bottom:2px}
+  .filter-label{display:none}
+  .fbtn{flex-shrink:0}
+}
+@media print{
+  .bar,.toc{display:none}
+  .layout{display:block}
+  body{background:#fff}
+  .doc-section{border:0;padding:0;page-break-before:always}
+  .hero{padding-top:0}
+  .rail-stage a::after{display:none}
+}
+</style>
+</head>
+<body>
+
+<header class="bar">
+  <div class="bar-inner">
+    <button class="menu-btn" id="menuBtn" aria-expanded="false" aria-controls="toc">Contents</button>
+    <div class="bar-title">VTPT Delivery Map <span>· Polytechnic stream · v0.1</span></div>
+    <div class="filter" role="group" aria-label="Highlight by evidence type">
+      <span class="filter-label">Highlight</span>
+      <button class="fbtn" data-k="D" aria-pressed="false" title="Stated by the principal"><span class="mark mark-D">D</span>Dictated <span class="count"></span></button>
+      <button class="fbtn" data-k="V" aria-pressed="false" title="Confirmed in a TNSDC governance document"><span class="mark mark-V">V</span>Verified <span class="count"></span></button>
+      <button class="fbtn" data-k="C" aria-pressed="false" title="Dictation and documents disagree"><span class="mark mark-C">C</span>Conflict <span class="count"></span></button>
+      <button class="fbtn" data-k="G" aria-pressed="false" title="Missing from the dictation"><span class="mark mark-G">G</span>Gap <span class="count"></span></button>
+      <button class="fbtn" data-k="I" aria-pressed="false" title="Structural reading, not a fact"><span class="mark mark-I">I</span>Inference <span class="count"></span></button>
+      <button class="fclear" id="fclear" hidden>Clear</button>
+    </div>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="hero-top">
+    <div>
+      <p class="kicker">Naan Mudhalvan / Vettri Thiran Payirchi Thittam · TNSDC</p>
+      <h1>Polytechnic skill training, from EoI to certificate</h1>
+      <p class="hero-lede">The canonical process model for one semester cycle of skill course delivery in Tamil Nadu's polytechnic colleges: who does what, in what order, what each step produces, and where the process is still unsettled.</p>
+    </div>
+    <aside class="status" aria-label="Document status">
+      <p class="status-state">Draft for confirmation</p>
+      <p><strong id="oqCount">16</strong> open questions, <strong>3 blocking</strong>. These must be closed before this becomes an SOP.</p>
+      <a href="#10-open-questions-ranked">Review open questions</a>
+    </aside>
+  </div>
+
+  <dl class="meta">
+    <div><dt>Source</dt><dd>Principal's dictation, 13 Sep 2026</dd></div>
+    <div><dt>Cross-verified against</dt><dd>2026-27 Odd Polytechnic Sub-Committee paper (16.06.26) and Board Note (04.07.26)</dd></div>
+    <div><dt>Scope</dt><dd>Polytechnic stream, one semester cycle, end to end</dd></div>
+    <div><dt>Step IDs</dt><dd>Stable join keys — never renumbered; insert as S3.4a</dd></div>
+  </dl>
+
+  <div class="rail-wrap">
+    <div class="rail-caption">
+      <h2>The cycle in nine stages</h2>
+      <p>Select a stage to read its steps.</p>
+    </div>
+    <ol class="rail">
+<li class='rail-stage'><a href='#stage-s0'><span class='rail-code'>S0</span><span class='rail-name'>Cycle initiation</span><span class='rail-sub'>DoTE course list, prior feedback</span></a></li>
+<li class='rail-stage'><a href='#stage-s1'><span class='rail-code'>S1</span><span class='rail-name'>Sourcing & eligibility</span><span class='rail-sub'>EoI, document verification</span></a></li>
+<li class='rail-stage'><a href='#stage-s2'><span class='rail-code'>S2</span><span class='rail-name'>Technical qualification</span><span class='rail-sub'>Course Evaluation Committee</span></a></li>
+<li class='rail-stage is-risk'><a href='#stage-s3'><span class='rail-code'>S3</span><span class='rail-name'>Mapping & commercials</span><span class='rail-sub'>Allocation, Cost Scrutiny Committee</span><span class='rail-flag'>hard constraints</span></a></li>
+<li class='rail-stage is-risk'><a href='#stage-s4'><span class='rail-code'>S4</span><span class='rail-name'>Trainer qualification</span><span class='rail-sub'>TRET, remap if short</span><span class='rail-flag'>rework loop</span></a></li>
+<li class='rail-stage is-risk'><a href='#stage-s5'><span class='rail-code'>S5</span><span class='rail-name'>Governance approval</span><span class='rail-sub'>Sub-Committee, CAC, Board, work orders</span><span class='rail-flag'>order disputed</span></a></li>
+<li class='rail-stage'><a href='#stage-s6'><span class='rail-code'>S6</span><span class='rail-name'>Delivery preparation</span><span class='rail-sub'>FDP, Skill Offering IDs, enrolment</span></a></li>
+<li class='rail-stage'><a href='#stage-s7'><span class='rail-code'>S7</span><span class='rail-name'>Delivery & assessment</span><span class='rail-sub'>Classes, exams, hackathon, certificates</span></a></li>
+<li class='rail-stage'><a href='#stage-s8'><span class='rail-code'>S8</span><span class='rail-name'>Closure & feedback</span><span class='rail-sub'>Feeds the next cycle</span></a></li>
+    </ol>
+    <div class="loop" aria-hidden="true"><span>S8 feedback drives the next EoI at S0</span></div>
+    <p class="rework"><b>Rework loop:</b> a trainer shortfall at S4 (TRET) can force a full remap back to S3, after pricing and first confirmation are already done.</p>
+  </div>
+</section>
+
+<div class="layout">
+  <nav class="toc" id="toc" aria-label="Contents">
+    <p class="toc-head">Contents</p>
+    <ol>
+<li><a href='#0-how-to-read-this'><span class='toc-n'>0</span>How to read this</a></li>
+<li><a href='#1-vocabulary-your-words-the-official-record'><span class='toc-n'>1</span>Vocabulary — your words ↔ the official record</a></li>
+<li><a href='#2-actors'><span class='toc-n'>2</span>Actors</a></li>
+<li><a href='#3-the-cycle-at-a-glance-9-stages'><span class='toc-n'>3</span>The cycle at a glance — 9 stages</a></li>
+<li><a href='#4-stage-specifications'><span class='toc-n'>4</span>Stage specifications</a><ol class='toc-sub'><li><a href='#stage-s0'>S0 Cycle Initiation</a></li><li><a href='#stage-s1'>S1 Sourcing & Eligibility</a></li><li><a href='#stage-s2'>S2 Technical Qualification (Course Evaluation Committee)</a></li><li><a href='#stage-s3'>S3 Preliminary Mapping & Commercials</a></li><li><a href='#stage-s4'>S4 Trainer Qualification (TRET) & Remapping</a></li><li><a href='#stage-s5'>S5 Governance Approval</a></li><li><a href='#stage-s6'>S6 Delivery Preparation</a></li><li><a href='#stage-s7'>S7 Delivery & Assessment</a></li><li><a href='#stage-s8'>S8 Closure & Feedback</a></li></ol></li>
+<li><a href='#5-artifact-registry'><span class='toc-n'>5</span>Artifact registry</a></li>
+<li><a href='#6-the-master-tracking-ledger-the-thing-you-own'><span class='toc-n'>6</span>The Master Tracking Ledger — the thing you own</a></li>
+<li><a href='#7-flowcharts'><span class='toc-n'>7</span>Flowcharts</a></li>
+<li><a href='#8-what-the-governance-documents-add-that-the-dictation-did-not'><span class='toc-n'>8</span>What the governance documents add that the dictation did not</a></li>
+<li><a href='#9-structural-findings'><span class='toc-n'>9</span>Structural findings</a></li>
+<li><a href='#10-open-questions-ranked'><span class='toc-n'>10</span>Open questions — ranked</a></li>
+<li><a href='#11-what-this-document-is-ready-to-become'><span class='toc-n'>11</span>What this document is ready to become</a></li>
+    </ol>
+  </nav>
+  <main class="doc" id="doc">
+<section aria-labelledby="0-how-to-read-this" class="doc-section"><h2 id="0-how-to-read-this">0. How to read this</h2>
+<p>Three things are kept strictly separate throughout, because merging them is how a knowledge base rots:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Mark</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr data-marks="D">
+<td><span class="mark mark-D" title="Dictated">D</span></td>
+<td><strong>Dictated.</strong> Stated by the principal. Authoritative on intent and practice.</td>
+</tr>
+<tr data-marks="V">
+<td><span class="mark mark-V" title="Verified">V</span></td>
+<td><strong>Verified.</strong> Confirmed in a primary TNSDC governance document, with date/reference.</td>
+</tr>
+<tr data-marks="C">
+<td><span class="mark mark-C" title="Conflict">C</span></td>
+<td><strong>Conflict.</strong> Dictation and documents disagree. Flagged, not resolved. Needs a ruling.</td>
+</tr>
+<tr data-marks="G">
+<td><span class="mark mark-G" title="Gap">G</span></td>
+<td><strong>Gap.</strong> Present in documents or logically required, but absent from the dictation. Needs confirmation.</td>
+</tr>
+<tr data-marks="I">
+<td><span class="mark mark-I" title="Inference">I</span></td>
+<td><strong>Inference.</strong> My structural reading. Not a fact. Reject freely.</td>
+</tr>
+</tbody>
+</table></div>
+<p>Every step carries a stable ID (<code>S3.4</code>). <strong>Do not renumber them.</strong> They are the join key for the SOP, the Gantt, the RACI, the tracking ledger schema, and any automation built later. New steps get decimal insertions (<code>S3.4a</code>), never a renumber.</p>
+
+</section><section aria-labelledby="1-vocabulary-your-words-the-official-record" class="doc-section"><h2 id="1-vocabulary-your-words-the-official-record">1. Vocabulary — your words ↔ the official record</h2>
+<p>The single most valuable output of the cross-check: <strong>four of your working terms have different official names.</strong> Correspondence, board notes and audit responses must use the right-hand column. Internal SOPs can use either, but the mapping has to be explicit or an auditor will read them as different bodies.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Your term (dictated)</th>
+<th>Official term (in board papers)</th>
+<th>Abbrev.</th>
+<th>Note</th>
+</tr>
+</thead>
+<tbody>
+<tr data-marks="V">
+<td>Technical evaluation</td>
+<td><strong>Course Evaluation Committee</strong></td>
+<td>CEC</td>
+<td><span class="mark mark-V" title="Verified">V</span> Comprised SMEs, professors, and representatives nominated by DoTE</td>
+</tr>
+<tr data-marks="V">
+<td>Financial committee</td>
+<td><strong>Cost Scrutiny Committee</strong></td>
+<td>CSC</td>
+<td><span class="mark mark-V" title="Verified">V</span> Convened 15.05.2026 at TNSDC office; "moderation" is the official verb</td>
+</tr>
+<tr data-marks="V">
+<td>Course allocation committee step</td>
+<td><strong>Course Allocation Committee</strong></td>
+<td>CAC</td>
+<td><span class="mark mark-V" title="Verified">V</span> Convened 23.06.2026, chaired by MD TNSDC, DoTE participating</td>
+</tr>
+<tr data-marks="V">
+<td>Subcommittee</td>
+<td><strong>Sub-Committee</strong></td>
+<td>—</td>
+<td><span class="mark mark-V" title="Verified">V</span> Paper dated 16.06.2026</td>
+</tr>
+<tr data-marks="V">
+<td>EOI</td>
+<td>Expression of Interest</td>
+<td>EoI</td>
+<td><span class="mark mark-V" title="Verified">V</span> Portal-based application</td>
+</tr>
+<tr data-marks="D">
+<td>Knowledge partner</td>
+<td>Training Partner / Industry Partner</td>
+<td>TP / IP</td>
+<td><span class="mark mark-D" title="Dictated">D</span> EoI invites both; only the TP path is described — see <strong><a class="oq" href="#oq-10">OQ-10</a></strong></td>
+</tr>
+<tr data-marks="V">
+<td>Document verification</td>
+<td>Initial scrutiny</td>
+<td>DV</td>
+<td><span class="mark mark-V" title="Verified">V</span> "initial scrutiny… to verify eligibility and completeness of documentation"</td>
+</tr>
+<tr data-marks="D">
+<td>CCAR</td>
+<td>Course Curriculum and Assessment Rubrics</td>
+<td>CCAR</td>
+<td><span class="mark mark-D" title="Dictated">D</span></td>
+</tr>
+<tr data-marks="V">
+<td>TRET</td>
+<td>Trainer Eligibility Test</td>
+<td>TRET</td>
+<td><span class="mark mark-V" title="Verified">V</span></td>
+</tr>
+<tr data-marks="V">
+<td>FDP</td>
+<td>Faculty Development Program</td>
+<td>FDP</td>
+<td><span class="mark mark-V" title="Verified">V</span> 6 days = 4 course + 2 assessment</td>
+</tr>
+<tr data-marks="D">
+<td>SPOC</td>
+<td>Single Point of Contact (college level)</td>
+<td>SPOC</td>
+<td><span class="mark mark-D" title="Dictated">D</span> One per college, remunerated per semester</td>
+</tr>
+<tr data-marks="D">
+<td>AD-DSTO</td>
+<td><em>expansion unconfirmed</em> — see <strong><a class="oq" href="#oq-3">OQ-3</a></strong></td>
+<td>—</td>
+<td><span class="mark mark-D" title="Dictated">D</span> District-level fund-disbursement channel for FDP</td>
+</tr>
+</tbody>
+</table></div>
+<p data-marks="D V"><strong>Programme naming:</strong> <span class="mark mark-D" title="Dictated">D</span> Naan Mudhalvan (NM) → now <strong>Vettri Thiran Payirchi Thittam (VTPT)</strong>. <span class="mark mark-V" title="Verified">V</span> All 2026-27 Odd Semester board papers still say "Naan Mudhalvan Programme". <strong><a class="oq" href="#oq-14">OQ-14</a>:</strong> which name is legally operative on work orders and certificates this cycle?</p>
+
+</section><section aria-labelledby="2-actors" class="doc-section"><h2 id="2-actors">2. Actors</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Actor</th>
+<th>Role in this process</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>TNSDC</strong></td>
+<td>Owner of the programme. Issues EoI, convenes all committees, issues work orders, conducts final assessment, pays TPs.</td>
+</tr>
+<tr>
+<td><strong>You (Project Associate/Manager)</strong></td>
+<td>Process operator. Own the correspondence, the committee logistics, the templates, the mapping, and — explicitly — the <strong>master tracking ledger</strong> (§6).</td>
+</tr>
+<tr data-marks="V">
+<td><strong>MD, TNSDC</strong></td>
+<td>Chairs the CAC. <span class="mark mark-V" title="Verified">V</span></td>
+</tr>
+<tr>
+<td><strong>TNSDC Board</strong></td>
+<td>Final approving authority. Approves each course as a separate agenda item.</td>
+</tr>
+<tr data-marks="V">
+<td><strong>Sub-Committee</strong></td>
+<td>Pre-board body. Approves shortlisted courses and course contents. <span class="mark mark-V" title="Verified">V</span></td>
+</tr>
+<tr>
+<td><strong>DoTE</strong> (Directorate of Technical Education)</td>
+<td>Recommends the course list [V, <strong><a class="oq" href="#oq-2">OQ-2</a></strong>]; nominates CEC evaluators; participates in CAC; receives marks on its own portal; co-owns delivery timeline.</td>
+</tr>
+<tr>
+<td><strong>CEC evaluators</strong></td>
+<td>Stream-matched subject experts. Polytechnic → DoTE + Government Polytechnic College professors. Engineering → Anna University. Arts &amp; Science → A&amp;S universities. Matched at <strong>department level</strong> (ECE course judged by ECE staff).</td>
+</tr>
+<tr>
+<td><strong>Industry members</strong></td>
+<td>Sit in CEC. Validate whether the course actually closes a real skill gap.</td>
+</tr>
+<tr>
+<td><strong>Cost Scrutiny Committee</strong></td>
+<td>Financial members + board members + deciding authorities. Moderates per-student cost.</td>
+</tr>
+<tr>
+<td><strong>Training Partner applicant → Training Partner</strong></td>
+<td>Status changes only at work-order issue (S5.6). Use the two terms precisely.</td>
+</tr>
+<tr data-marks="D">
+<td><strong>Question-paper contractor</strong></td>
+<td>External. Drafts TRET papers. <span class="mark mark-D" title="Dictated">D</span> Deliberately separate from delivery.</td>
+</tr>
+<tr>
+<td><strong>Internal pedagogy/assessment team</strong></td>
+<td>Vets TRET papers before release.</td>
+</tr>
+<tr>
+<td><strong>Assessment partners</strong></td>
+<td>Build and conduct the online TRET with TNSDC.</td>
+</tr>
+<tr>
+<td><strong>Host polytechnic colleges</strong></td>
+<td>Provide venue + systems for TRET; host FDPs; deliver classroom space.</td>
+</tr>
+<tr>
+<td><strong>College SPOC</strong></td>
+<td>Onboards and enrols students on the portal. Remunerated per semester.</td>
+</tr>
+<tr>
+<td><strong>District coordinators</strong></td>
+<td>Random field inspection against the synced schedule.</td>
+</tr>
+<tr>
+<td><strong>AD-DSTOs</strong></td>
+<td>Receive FDP funds, disburse to host institutions and attending faculty.</td>
+</tr>
+<tr>
+<td><strong>Portal / website team</strong></td>
+<td>Owns the NM portal, API integration, inspection-app sync. <strong>You do not own this — you escalate to it.</strong></td>
+</tr>
+<tr>
+<td><strong>Polytechnic faculty</strong></td>
+<td>FDP attendees → become <strong>external assessors</strong> after the 2-day assessment module.</td>
+</tr>
+</tbody>
+</table></div>
+
+</section><section aria-labelledby="3-the-cycle-at-a-glance-9-stages" class="doc-section"><h2 id="3-the-cycle-at-a-glance-9-stages">3. The cycle at a glance — 9 stages</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr data-marks="V">
+<th>Stage</th>
+<th>Name</th>
+<th>Ends when</th>
+<th>2026-27 Odd actual dates <span class="mark mark-V" title="Verified">V</span></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong class="sid">S0</strong></td>
+<td>Cycle Initiation</td>
+<td>Course list fixed, EoI drafted</td>
+<td>DoTE letter DOTE/100/2026-Y2, 24.02.2026</td>
+</tr>
+<tr>
+<td><strong class="sid">S1</strong></td>
+<td>Sourcing &amp; Eligibility</td>
+<td>DV cleared list published</td>
+<td>EoI ads 06.02.2026 &amp; 07.03.2026; windows 06.02–23.02 and 07.03–06.04</td>
+</tr>
+<tr>
+<td><strong class="sid">S2</strong></td>
+<td>Technical Qualification (CEC)</td>
+<td>Pass/fail recorded per TP × course</td>
+<td>27–28.02.2026 (Ph.1), 08.05.2026 (Ph.2)</td>
+</tr>
+<tr>
+<td><strong class="sid">S3</strong></td>
+<td>Preliminary Mapping &amp; Commercials</td>
+<td>TP confirmation #1 received</td>
+<td>CSC 15.05.2026</td>
+</tr>
+<tr>
+<td><strong class="sid">S4</strong></td>
+<td>Trainer Qualification (TRET) &amp; Remap</td>
+<td>TP confirmation #2 received</td>
+<td>—</td>
+</tr>
+<tr>
+<td><strong class="sid">S5</strong></td>
+<td>Governance Approval</td>
+<td>Work orders issued</td>
+<td>Sub-Cttee 16.06.2026; CAC 23.06.2026; Board note 04.07.2026</td>
+</tr>
+<tr>
+<td><strong class="sid">S6</strong></td>
+<td>Delivery Preparation</td>
+<td>Classes scheduled on portal</td>
+<td>—</td>
+</tr>
+<tr>
+<td><strong class="sid">S7</strong></td>
+<td>Delivery &amp; Assessment</td>
+<td>Hackathon report approved, marks uploaded</td>
+<td>—</td>
+</tr>
+<tr>
+<td><strong class="sid">S8</strong></td>
+<td>Closure &amp; Feedback</td>
+<td>Feedback report filed → feeds S0</td>
+<td>—</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>The cycle is a loop, not a line.</strong> S8 output is S0 input. Two internal rework loops exist (S4→S3, and a possible S4→S5 re-entry) — see §8.</p>
+
+</section><section aria-labelledby="4-stage-specifications" class="doc-section"><h2 id="4-stage-specifications">4. Stage specifications</h2>
+
+<h3 id="stage-s0">S0 — Cycle Initiation</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>Step</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr data-marks="G V">
+<td><strong class="sid">S0.1</strong></td>
+<td>Receive course recommendation from DoTE</td>
+<td><span class="mark mark-V" title="Verified">V</span> 2026-27 Odd ran on <em>Course Recommendation Letter, DoTE No. DOTE/100/2026-Y2, dated 24.02.2026</em>. <span class="mark mark-G" title="Gap">G</span> <strong>Not in the dictation.</strong> This is the true origin of "the specific courses that we have listed" in the EoI. See <strong><a class="oq" href="#oq-2">OQ-2</a></strong>.</td>
+</tr>
+<tr data-marks="D">
+<td><strong class="sid">S0.2</strong></td>
+<td>Ingest prior-cycle feedback</td>
+<td><span class="mark mark-D" title="Dictated">D</span> Student feedback report from S8.3 and "changes that need to be made" drive the new EoI.</td>
+</tr>
+<tr data-marks="V">
+<td><strong class="sid">S0.3</strong></td>
+<td>Fix semester parameters</td>
+<td><span class="mark mark-V" title="Verified">V</span> Target semester (3rd Sem), course duration (60 hours), credit-bearing status, mandatory Hackathon component.</td>
+</tr>
+<tr data-marks="D">
+<td><strong class="sid">S0.4</strong></td>
+<td>Determine domain coverage requirement</td>
+<td><span class="mark mark-D" title="Dictated">D</span> Domains: <strong>Civil &amp; allied · Mechanical &amp; allied · ECE · EEE · CSE/IT &amp; allied · Other branches</strong>. Rule set here, enforced at S3.3.</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Artifacts out:</strong> DoTE course recommendation letter · prior-cycle feedback report · course list for EoI.</p>
+
+<h3 id="stage-s1">S1 — Sourcing &amp; Eligibility</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>Step</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr data-marks="D">
+<td><strong class="sid">S1.1</strong></td>
+<td>Draft EoI document</td>
+<td><span class="mark mark-D" title="Dictated">D</span> States TNSDC's interest in receiving knowledge partners (TPs and IPs) to deliver the listed courses.</td>
+</tr>
+<tr data-marks="D V">
+<td><strong class="sid">S1.2</strong></td>
+<td>Publish</td>
+<td><span class="mark mark-D" title="Dictated">D</span> Newspaper advertisement + document posted on the TNSDC/NM website. <span class="mark mark-V" title="Verified">V</span> Dinakaran (Tamil) and The Hindu (English); DIPR ad numbers: DIPR/765/TENDER/2026 (06.02.2026), DIPR/1645/TENDER/2026 (07.03.2026).</td>
+</tr>
+<tr data-marks="D V">
+<td><strong class="sid">S1.3</strong></td>
+<td>Open EoI application window</td>
+<td><span class="mark mark-D" title="Dictated">D</span> Applicants apply against listed courses, <strong>or select "Other"</strong> to propose a course outside the list. <span class="mark mark-V" title="Verified">V</span> Applications accepted via the Naan Mudhalvan portal.</td>
+</tr>
+<tr data-marks="D">
+<td><strong class="sid">S1.4</strong></td>
+<td>Capture applicant preferences</td>
+<td><span class="mark mark-D" title="Dictated">D</span> Preferred <strong>zones</strong> and <strong>districts</strong> recorded at application. This is <strong>preference capture #1</strong> of 2.</td>
+</tr>
+<tr data-marks="D">
+<td><strong class="sid">S1.5</strong></td>
+<td>Applicants complete annexures</td>
+<td><span class="mark mark-D" title="Dictated">D</span> Filled during the EoI process; <strong>physical copies carried to DV</strong>.</td>
+</tr>
+<tr data-marks="D">
+<td><strong class="sid">S1.6</strong></td>
+<td>Close EoI window</td>
+<td><span class="mark mark-D" title="Dictated">D</span> Hard cut-off. No knowledge partner accepted after close.</td>
+</tr>
+<tr data-marks="G V">
+<td><strong class="sid">S1.6a</strong></td>
+<td><em>Contingency:</em> re-float EoI</td>
+<td><span class="mark mark-V" title="Verified">V</span> 2026-27 Odd ran <strong>two EoI phases</strong>. Phase 2 (07.03–06.04) added applicants, including for PCB Design &amp; Testing. <span class="mark mark-G" title="Gap">G</span> Not described as a standard branch in the dictation. See <strong><a class="oq" href="#oq-6">OQ-6</a></strong>.</td>
+</tr>
+<tr data-marks="D">
+<td><strong class="sid">S1.7</strong></td>
+<td>Fix DV date and convene applicants</td>
+<td><span class="mark mark-D" title="Dictated">D</span></td>
+</tr>
+<tr>
+<td><strong class="sid">S1.8</strong></td>
+<td>Conduct Document Verification</td>
+<td>Against the eligibility floor below.</td>
+</tr>
+<tr data-marks="D">
+<td><strong class="sid">S1.9</strong></td>
+<td>Confirm preferences — pass #2</td>
+<td><span class="mark mark-D" title="Dictated">D</span> Re-confirm preferred districts at DV. Explicitly a <strong>second</strong> confirmation, not a repeat.</td>
+</tr>
+<tr data-marks="D">
+<td><strong class="sid">S1.10</strong></td>
+<td>Reality-check readiness</td>
+<td><span class="mark mark-D" title="Dictated">D</span> Inquire relevant details; confirm personnel are actually available; <strong>explicitly walk the applicant through the realistic friction they will face in implementation</strong>; obtain readiness confirmation.</td>
+</tr>
+<tr data-marks="D">
+<td><strong class="sid">S1.11</strong></td>
+<td>Issue trainer-contracting instruction</td>
+<td><span class="mark mark-D" title="Dictated">D</span> Tell applicants which trainers they hold on-roll/contract and instruct them to <strong>close those contracts within 1–3 weeks</strong>, so trainers are contractually available to sit TRET once CEC and CSC are done.</td>
+</tr>
+<tr data-marks="D">
+<td><strong class="sid">S1.12</strong></td>
+<td>Collect delivery material</td>
+<td><span class="mark mark-D" title="Dictated">D</span> (a) Lectures the TP has created. (b) <strong>CCAR document</strong> — "one of the most important."</td>
+</tr>
+<tr data-marks="D">
+<td><strong class="sid">S1.13</strong></td>
+<td>CCAR cure window</td>
+<td><span class="mark mark-D" title="Dictated">D</span> If CCAR absent at DV: <strong>2 weeks to produce it</strong>, and the finalised CCAR must be in hand <strong>one week before the CEC</strong>.</td>
+</tr>
+<tr data-marks="D">
+<td><strong class="sid">S1.14</strong></td>
+<td>Publish DV outcome</td>
+<td><span class="mark mark-D" title="Dictated">D</span> Cleared / not cleared per applicant per course → into the ledger (§6).</td>
+</tr>
+</tbody>
+</table></div>
+<h4 id="stage-s1-8">S1.8 — Eligibility floor (Document Verification criteria)</h4>
+<p data-marks="D">All are <span class="mark mark-D" title="Dictated">D</span>. This is the complete dictated list; treat it as the authoritative checklist source.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>Criterion</th>
+<th>Threshold</th>
+<th>Feeds downstream?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>E1</td>
+<td>Average annual revenue, past 3 years</td>
+<td><strong>≥ ₹1 crore</strong></td>
+<td><strong>Yes — the exact figure is reused in the 33% cap at S3.6.</strong> Capture the number, not just pass/fail.</td>
+</tr>
+<tr>
+<td>E2</td>
+<td>Qualified trainers on payment roster</td>
+<td><strong>≥ 20</strong></td>
+<td>Yes — trainer supply at S4</td>
+</tr>
+<tr>
+<td>E3</td>
+<td>Physical training facilities</td>
+<td>Must exist</td>
+<td>—</td>
+</tr>
+<tr>
+<td>E4</td>
+<td>Trainees delivered in past 2 years</td>
+<td><strong>&gt; 200 people</strong></td>
+<td>Yes — "students handled before" at S3.6</td>
+</tr>
+<tr>
+<td>E5</td>
+<td>Years in skill/training services</td>
+<td><strong>≥ 2 years</strong></td>
+<td>Yes — "new vs long-term TP" at S3.5/S3.6</td>
+</tr>
+<tr>
+<td>E6</td>
+<td>Technical capability</td>
+<td>Can implement technical solutions and <strong>integrate with the API</strong></td>
+<td>Yes — S6.6 API integration</td>
+</tr>
+<tr>
+<td>E7</td>
+<td>Geographic reach</td>
+<td>Can deploy trainers to the districts applied for</td>
+<td>Yes — S3.6, S4.5</td>
+</tr>
+</tbody>
+</table></div>
+<blockquote class="callout callout-note" data-marks="I">
+<p><strong>Design note <span class="mark mark-I" title="Inference">I</span>:</strong> E1, E4 and E5 are not pass/fail gates — they are <strong>numeric inputs consumed later</strong>. A DV checklist that only records ✔/✘ destroys the data the mapping stage needs. The DV checklist must be a <em>value-capture</em> instrument, not a tick-box.</p>
+</blockquote>
+<p><strong>Artifacts out:</strong> EoI document · newspaper ad · portal application records · applicant annexures · <strong>DV checklist (criteria × applicant matrix)</strong> · CCAR per TP per course · lecture material · trainer-contracting instruction.</p>
+
+<h3 id="stage-s2">S2 — Technical Qualification (Course Evaluation Committee)</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>Step</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr data-marks="D">
+<td><strong class="sid">S2.1</strong></td>
+<td>Convene the committee</td>
+<td><span class="mark mark-D" title="Dictated">D</span> <strong>You</strong> email DoTE, industry members and TP applicants; fix the date; correspond with all TP applicants to attend.</td>
+</tr>
+<tr data-marks="D V">
+<td><strong class="sid">S2.2</strong></td>
+<td>Constitute stream-matched evaluators</td>
+<td><span class="mark mark-D" title="Dictated">D</span> Polytechnic → DoTE + Government Polytechnic College professors. Engineering → Anna University. Arts &amp; Science → A&amp;S universities. <strong>Matched at department level</strong> — an ECE course is evaluated by ECE staff. <span class="mark mark-V" title="Verified">V</span> "CEC comprised subject matter experts, professors, and representatives nominated by DoTE."</td>
+</tr>
+<tr data-marks="D">
+<td><strong class="sid">S2.3</strong></td>
+<td>Issue the evaluation template <strong>before</strong> evaluation begins</td>
+<td><span class="mark mark-D" title="Dictated">D</span> Non-negotiable ordering. <span class="mark mark-D" title="Dictated">D</span> You authored this semester's template; <strong>standardising and improving it is an owned forward action</strong>.</td>
+</tr>
+<tr data-marks="D">
+<td><strong class="sid">S2.4</strong></td>
+<td>Prepare two attendance registers</td>
+<td><span class="mark mark-D" title="Dictated">D</span> <strong>(a) who arrived</strong>, <strong>(b) who actually sat for evaluation.</strong> Two distinct records.</td>
+</tr>
+<tr data-marks="D">
+<td><strong class="sid">S2.5</strong></td>
+<td>TP submits trainer profiles</td>
+<td><span class="mark mark-D" title="Dictated">D</span> Profiles of trainers under contract <strong>who will write the TRET</strong>. Directly feeds S4.</td>
+</tr>
+<tr data-marks="D">
+<td><strong class="sid">S2.6</strong></td>
+<td>TP presents CCAR</td>
+<td><span class="mark mark-D" title="Dictated">D</span> The planned course curriculum and assessment rubrics.</td>
+</tr>
+<tr data-marks="D">
+<td><strong class="sid">S2.7</strong></td>
+<td>Evaluate and record</td>
+<td><span class="mark mark-D" title="Dictated">D</span> Committee records evaluation criteria and pass/fail <strong>in the template</strong>.</td>
+</tr>
+<tr data-marks="D">
+<td><strong class="sid">S2.8</strong></td>
+<td>CCAR benchmarking</td>
+<td><span class="mark mark-D" title="Dictated">D</span> Committee identifies <strong>whose CCAR is best and can be standardised across all TPs delivering that course.</strong></td>
+</tr>
+<tr data-marks="D">
+<td><strong class="sid">S2.9</strong></td>
+<td>Industry validation</td>
+<td><span class="mark mark-D" title="Dictated">D</span> Industry members check the course material for <strong>effectiveness</strong> and whether it <strong>actually closes an existing skill gap/need</strong>.</td>
+</tr>
+<tr data-marks="D">
+<td><strong class="sid">S2.10</strong></td>
+<td>Record outcome per TP per course</td>
+<td><span class="mark mark-D" title="Dictated">D</span> Pass/fail by subject. Gate to S3.</td>
+</tr>
+</tbody>
+</table></div>
+<blockquote class="callout callout-dictated" data-marks="D">
+<p><strong><span class="mark mark-D" title="Dictated">D</span> Standing requirement on the S2.7 record:</strong> it "will come into play multiple times down the line" — must be <strong>easily readable, well documented, and auditable</strong>. It is the evidentiary backbone for every later approval and for audit/RTI.</p>
+</blockquote>
+<p><strong>Artifacts out:</strong> CEC invitation correspondence · <strong>CEC evaluation template (completed, per evaluator × TP × course)</strong> · attendance register A (arrival) · attendance register B (sitting) · trainer profile lists · CCAR submissions · CCAR benchmark recommendation · CEC pass/fail register.</p>
+
+<h3 id="stage-s3">S3 — Preliminary Mapping &amp; Commercials</h3>
+<p>This is the analytically hardest stage and the one most worth automating. It is a <strong>constrained allocation problem</strong>, not a spreadsheet exercise (see §9.3).</p>
+<h4 id="stage-s3-1">S3.1 — Establish the demand baseline (must precede mapping)</h4>
+<p data-marks="D"><span class="mark mark-D" title="Dictated">D</span> Before any mapping, establish:</p>
+<ul>
+<li>Student count <strong>per district</strong></li>
+<li>Student count <strong>per domain within each district</strong></li>
+<li>Student count <strong>per zone</strong></li>
+</ul>
+<p data-marks="V"><span class="mark mark-V" title="Verified">V</span> Zones in use: <strong>N1, N2, W1, W2, C1, C2, S1, S2, SE, CH</strong> (10). District-level allocation also occurs (e.g. Tiruppur, Erode, Namakkal, Salem, Dharmapuri, Krishnagiri, Coimbatore, Nilgiris named individually).</p>
+<h4 id="stage-s3-2">S3.2 — Project forward</h4>
+<p data-marks="D I"><span class="mark mark-D" title="Dictated">D</span> <strong>Projected students = 1.25 × previous semester's count</strong> for the same unit. <span class="mark mark-I" title="Inference">I</span> Confirm the unit of application — per district, per domain, or per district × domain. <strong><a class="oq" href="#oq-9">OQ-9</a>.</strong></p>
+<h4 id="stage-s3-3">S3.3 — Course-to-district assignment (coverage layer)</h4>
+<p data-marks="D">Constraints, all <span class="mark mark-D" title="Dictated">D</span>:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>Constraint</th>
+<th>Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C1</td>
+<td>Pull the <strong>previous two semesters'</strong> mappings — which course went to which district</td>
+<td>Input</td>
+</tr>
+<tr>
+<td>C2</td>
+<td><strong>No district may receive the same course in consecutive semesters</strong> — the same student cohort moves up, so courses must be swapped</td>
+<td>Hard</td>
+</tr>
+<tr>
+<td>C3</td>
+<td><strong>Every domain in every district must have a course assigned.</strong> No domain in any district may be left without one</td>
+<td>Hard</td>
+</tr>
+<tr>
+<td>C4</td>
+<td>Only courses for which the CEC cleared at least one TP are eligible</td>
+<td>Hard</td>
+</tr>
+<tr>
+<td>C5</td>
+<td>Sufficient course variety per district; sufficient TPs statewide</td>
+<td>Soft/goal</td>
+</tr>
+</tbody>
+</table></div>
+<h4 id="stage-s3-4">S3.4 — TP-to-district assignment (allocation layer)</h4>
+<p data-marks="D">Constraints, all <span class="mark mark-D" title="Dictated">D</span> unless marked:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>Constraint</th>
+<th>Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A1</td>
+<td>Districts this TP has handled before → prefer</td>
+<td>Soft, positive</td>
+</tr>
+<tr>
+<td>A2</td>
+<td>New TP? → <strong>must not receive a large student allocation</strong></td>
+<td>Soft, strong</td>
+</tr>
+<tr>
+<td>A3</td>
+<td>Number of students handled before</td>
+<td>Input</td>
+</tr>
+<tr>
+<td>A4</td>
+<td>Past performance/review <strong>from feedback forms</strong></td>
+<td>Input</td>
+</tr>
+<tr>
+<td>A5</td>
+<td>Honour stated preferred districts and zones</td>
+<td>Soft</td>
+</tr>
+<tr data-marks="D">
+<td>A6</td>
+<td><strong>No course may be monopolised by a single TP</strong> — unless that TP is a long-term partner. <span class="mark mark-D" title="Dictated">D</span> "this rule is based on the given circumstance, and might vary wildly based on the discretion of the people involved"</td>
+<td>Soft, discretionary</td>
+</tr>
+<tr>
+<td>A7</td>
+<td><strong>33% revenue cap:</strong> <code>students_allocated × cost_per_student ≤ 0.33 × (3-year average revenue)</code>. Revenue figure sourced from DV (E1)</td>
+<td><strong>Hard, quantitative</strong></td>
+</tr>
+<tr data-marks="V">
+<td>A8</td>
+<td><span class="mark mark-V" title="Verified">V</span> Allocation proportional to the number of <strong>TRET-qualified trainers</strong></td>
+<td>Hard — <em>but this can only bind at S4.6, after TRET results exist</em></td>
+</tr>
+</tbody>
+</table></div>
+<blockquote class="callout callout-note" data-marks="I V">
+<p><strong>Quantified consequence of A7 <span class="mark mark-I" title="Inference">I</span>:</strong> at the ₹1 crore eligibility floor, a TP's ceiling is <strong>₹33,00,000 ÷ cost_per_student</strong>.</p>
+<ul>
+<li>At <strong>₹600/student</strong> → <strong>5,500 students</strong> maximum.</li>
+<li>At <strong>₹1,450/student</strong> → <strong>2,275 students</strong> maximum. <span class="mark mark-V" title="Verified">V</span> Observed 2026-27 Odd allocations: L&amp;T EduTech 2,895 students @ ₹1,450 = ₹41,97,750 → implies a 3-year average revenue of <strong>at least ₹1.27 crore</strong> for that TP alone. The cap is a live, binding constraint at realistic allocation sizes, not a formality. <strong>It must be computed before the A3 sheet is printed, not after.</strong></li>
+</ul>
+</blockquote>
+<h4 id="stage-s3-5">S3.5 — Produce and circulate the mapping</h4>
+<ul>
+<li data-marks="D"><span class="mark mark-D" title="Dictated">D</span> Output printed on an <strong>A3 sheet</strong>.</li>
+<li data-marks="D"><span class="mark mark-D" title="Dictated">D</span> Sent to "the corresponding authorities for them to make decisions." <strong><a class="oq" href="#oq-11">OQ-11</a>: who, specifically, and is this sign-off distinct from the CAC?</strong></li>
+</ul>
+<h4 id="stage-s3-6">S3.6 — Cost Scrutiny Committee</h4>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>Step</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr data-marks="D V">
+<td><strong class="sid">S3.6.1</strong></td>
+<td>Fix the date, convene the committee</td>
+<td><span class="mark mark-D" title="Dictated">D</span> Financial members + board members + deciding authorities. <span class="mark mark-V" title="Verified">V</span> Held 15.05.2026 at TNSDC office; official verb is "moderation".</td>
+</tr>
+<tr data-marks="D">
+<td><strong class="sid">S3.6.2</strong></td>
+<td>Deliberate course → TP → price</td>
+<td><span class="mark mark-D" title="Dictated">D</span> Which course to which TP, and at what rate.</td>
+</tr>
+<tr data-marks="D">
+<td><strong class="sid">S3.6.3</strong></td>
+<td>Consider additional courses</td>
+<td><span class="mark mark-D" title="Dictated">D</span> "Any other suggested course that could also be provided" may be tabled here.</td>
+</tr>
+<tr data-marks="V">
+<td><strong class="sid">S3.6.4</strong></td>
+<td>Anchor to national cost norms</td>
+<td><span class="mark mark-V" title="Verified">V</span> PMKVY 3.0 Common Cost Norms, <strong>₹42/hr × 60 hrs = ₹2,520/student</strong>, then moderated downward.</td>
+</tr>
+<tr data-marks="V">
+<td><strong class="sid">S3.6.5</strong></td>
+<td>Set the moderated rate</td>
+<td><span class="mark mark-V" title="Verified">V</span> Observed 2026-27 Odd: <strong>₹600</strong>, <strong>₹1,400</strong>, <strong>₹1,450</strong> per student depending on course category. Moderation rationale on record: "operational cost involved and student count."</td>
+</tr>
+<tr data-marks="D">
+<td><strong class="sid">S3.6.6</strong></td>
+<td>Present the estimate to TPs</td>
+<td><span class="mark mark-D" title="Dictated">D</span> TPs are given the mapping-derived numbers and the estimate; they agree or disagree.</td>
+</tr>
+</tbody>
+</table></div>
+<h4 id="stage-s3-7">S3.7 — Confirmation round #1</h4>
+<p data-marks="D"><span class="mark mark-D" title="Dictated">D</span> Mail to each TP requesting confirmation of <strong>course + price + districts</strong>. If confirming, the TP must return:</p>
+<ul>
+<li>the <strong>number of trainers</strong> it holds for that course</li>
+<li data-marks="D"><span class="mark mark-D" title="Dictated">D</span> against a stated requirement: <strong>1 trainer per 60 students per college</strong></li>
+</ul>
+<blockquote class="callout callout-note">
+<p><strong><a class="oq" href="#oq-8">OQ-8</a>:</strong> is the 1:60 ratio per college, or per district? The wording says "per college", which sets trainer demand by <em>college count</em>, not student count — a materially different number.</p>
+</blockquote>
+<p><strong>Artifacts out:</strong> student count baseline sheet · 1.25× projection sheet · prior-two-semester mapping history · <strong>preliminary mapping (A3)</strong> · CSC minutes and rate schedule · confirmation mail #1 + TP responses · trainer count per TP per course.</p>
+
+<h3 id="stage-s4">S4 — Trainer Qualification (TRET) &amp; Remapping</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>Step</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr data-marks="D">
+<td><strong class="sid">S4.1</strong></td>
+<td>Plan the TRET</td>
+<td><span class="mark mark-D" title="Dictated">D</span> Exams for <strong>all trainers under each TP, for the subjects they will teach</strong>.</td>
+</tr>
+<tr data-marks="D">
+<td><strong class="sid">S4.2</strong></td>
+<td>Commission question papers</td>
+<td><span class="mark mark-D" title="Dictated">D</span> Drafted by a <strong>separate external contractor</strong> — structurally independent of delivery.</td>
+</tr>
+<tr data-marks="D">
+<td><strong class="sid">S4.3</strong></td>
+<td>Internal vetting</td>
+<td><span class="mark mark-D" title="Dictated">D</span> Vetted by the <strong>internal team responsible for course planning, pedagogy and assessment</strong>. Their confirmation is a hard gate.</td>
+</tr>
+<tr data-marks="D">
+<td><strong class="sid">S4.4</strong></td>
+<td>Hand off to assessment partners</td>
+<td><span class="mark mark-D" title="Dictated">D</span> Paper + options released to assessment partners, who build and conduct the <strong>online</strong> test with TNSDC.</td>
+</tr>
+<tr data-marks="D">
+<td><strong class="sid">S4.5</strong></td>
+<td>Arrange venues</td>
+<td><span class="mark mark-D" title="Dictated">D</span> Negotiate with colleges in each district for <strong>time slots and computer systems</strong>.</td>
+</tr>
+<tr data-marks="D">
+<td><strong class="sid">S4.6</strong></td>
+<td>Conduct and collect results</td>
+<td><span class="mark mark-D" title="Dictated">D</span></td>
+</tr>
+<tr data-marks="D">
+<td><strong class="sid">S4.7</strong></td>
+<td>Sufficiency test</td>
+<td><span class="mark mark-D" title="Dictated">D</span> For each TP × course × district: are there enough qualified trainers <strong>plus substitutes</strong> to cover every district the TP committed to?</td>
+</tr>
+</tbody>
+</table></div>
+<h4 id="stage-s4-8">S4.8 — Shortfall handling (the rework branch)</h4>
+<p data-marks="D"><span class="mark mark-D" title="Dictated">D</span> Cascade, in order:</p>
+<ol>
+<li>TP has insufficient qualified trainers for a committed district → <strong>TP may be dropped</strong> for that course/district.</li>
+<li>If dropping that TP leaves a course with <strong>only one TP, and that TP is not a long-term partner</strong> → constraint A6 is violated → <strong>the course itself must be dropped.</strong></li>
+<li>Dropping a course breaks constraint C3 (every domain in every district must have a course) → <strong>full remap required.</strong></li>
+<li><strong>Second mapping pass</strong> executes with real trainer supply known: which course, which domain/department, which district, which TP, how many students.</li>
+<li data-marks="D">Internal decision: <strong>conduct a second TRET, or proceed with the current count.</strong> <span class="mark mark-D" title="Dictated">D</span> <strong><a class="oq" href="#oq-12">OQ-12</a>: what is the decision rule here?</strong> Currently undocumented and discretionary.</li>
+<li><strong>Confirmation round #2</strong> — mail to TPs stating course, student count, trainer count, districts; TP accepts the count and terms.</li>
+</ol>
+<blockquote class="callout callout-note" data-marks="I">
+<p><strong><span class="mark mark-I" title="Inference">I</span> This is the single highest-risk transition in the cycle.</strong> It sits after CEC, after CSC pricing, and after confirmation #1 — i.e. at the point of maximum sunk coordination cost — and its trigger (TRET pass rates) is <strong>not under TNSDC's control and is not forecast anywhere in the process</strong>. See §9.2.</p>
+</blockquote>
+<p><strong>Artifacts out:</strong> TRET question papers (contractor) · vetting sign-off · TRET results register · trainer sufficiency matrix (TP × course × district × qualified + substitutes) · <strong>final mapping (post-TRET)</strong> · confirmation mail #2 + TP responses.</p>
+
+<h3 id="stage-s5">S5 — Governance Approval</h3>
+<blockquote class="callout callout-conflict" data-marks="C">
+<p>⚠️ <strong><span class="mark mark-C" title="Conflict">C</span> CONFLICT — the order of S5.1 and S5.2 is disputed. This is <a class="oq" href="#oq-1">OQ-1</a> and it blocks the SOP.</strong></p>
+<p><strong>Dictated order:</strong> Course Allocation Committee → Sub-Committee → Board Note → Board.<br/><strong>Documented order:</strong> Sub-Committee → Course Allocation Committee → Board Note → Board.</p>
+<p>Evidence for the documented order:</p>
+<ul>
+<li>Sub-Committee paper dated <strong>16.06.2026</strong>; CAC convened <strong>23.06.2026</strong>; board note <strong>04.07.2026</strong>.</li>
+<li>Board note text, verbatim: <em>"Upon detailed deliberation, the Sub-Committee accorded its approval to the shortlisted courses and the respective course contents. <strong>To facilitate the allocation of the approved courses</strong> to the respective polytechnic colleges…, a Course Allocation Committee was convened on 23.06.2026."</em></li>
+</ul>
+<p>That phrasing makes the Sub-Committee the body that approves <strong>what</strong> runs (course slate + content), and the CAC the body that decides <strong>who delivers it, where, to how many</strong>. Logically the slate must be fixed before it can be allocated.</p>
+<p><strong>Both orderings are presented below. Confirm which is correct before anything downstream is built.</strong></p>
+</blockquote>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>Step</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr data-marks="D V">
+<td><strong class="sid">S5.1</strong></td>
+<td><strong>Sub-Committee</strong></td>
+<td><span class="mark mark-D" title="Dictated">D</span> Draft the sub-committee board note per course: this course → this TP, at this cost, to this many students, these cost components, <strong>the syllabus, the course content, and the assessment matrix</strong> for delivery and student evaluation. <span class="mark mark-V" title="Verified">V</span> Structured as one numbered agenda item per course (5.1 BIM, 5.2 Revit, 5.3 GenAI, 5.4 Mobile App Dev, 5.5 UI/UX, 5.6 PCB Design &amp; Testing, 5.7 Home Automation, 5.8 IoT, 5.9 CNC Milling, 5.10 CNC Turning, …). <span class="mark mark-V" title="Verified">V</span> Outcome: "the Sub-Committee accorded its approval to the shortlisted courses and the respective course contents."</td>
+</tr>
+<tr data-marks="D V">
+<td><strong class="sid">S5.2</strong></td>
+<td><strong>Course Allocation Committee</strong></td>
+<td><span class="mark mark-D" title="Dictated">D</span> Draft the CAC document: these TPs are shortlisted for this course; courses go to these domains, these districts, this many students, at this cost. Board members and the DoTE representative confirm and accept. <span class="mark mark-V" title="Verified">V</span> Chaired by <strong>MD, TNSDC</strong>, with DoTE participation, 23.06.2026. <span class="mark mark-V" title="Verified">V</span> Constituted under Board direction at the <strong>39th Board meeting, 12.08.2025</strong>.</td>
+</tr>
+<tr data-marks="I V">
+<td><strong class="sid">S5.2a</strong></td>
+<td>CAC decision criteria</td>
+<td><span class="mark mark-V" title="Verified">V</span> Six factors on record: sector expertise · previous training experience · trainer expertise, availability and geographical presence · feedback from previous implementation · availability of adequate quality trainers · choice of empanelled TPs. <span class="mark mark-V" title="Verified">V</span> Plus: allocation "carried out <strong>in proportion to the number of trainers who successfully qualified in the TRET</strong>." <span class="mark mark-I" title="Inference">I</span> These overlap heavily with your S3.4 criteria — the CAC is largely ratifying the mapping logic you already executed, which means <strong>your mapping worksheet is effectively the CAC's evidence base.</strong></td>
+</tr>
+<tr data-marks="D">
+<td><strong class="sid">S5.3</strong></td>
+<td>Refine into the Board Note</td>
+<td><span class="mark mark-D" title="Dictated">D</span> Sub-committee note refined and finalised as a board note.</td>
+</tr>
+<tr data-marks="D V">
+<td><strong class="sid">S5.4</strong></td>
+<td>Board meeting</td>
+<td><span class="mark mark-D" title="Dictated">D</span> State authorities confirm a meeting, discuss <strong>each agenda item</strong>, finalise course provision. <span class="mark mark-V" title="Verified">V</span> Board note structure per agenda: EoI reference and ad numbers → application windows → CEC dates → CSC moderation → course description → mode of delivery → commercials → proposed TPs for empanelment → <em>"If agreed, the Board may resolve to approve the proposal."</em></td>
+</tr>
+<tr data-marks="D">
+<td><strong class="sid">S5.5</strong></td>
+<td>Board approval</td>
+<td><span class="mark mark-D" title="Dictated">D</span> Each agenda and proposal approved.</td>
+</tr>
+<tr data-marks="D">
+<td><strong class="sid">S5.6</strong></td>
+<td>Draft work orders</td>
+<td><span class="mark mark-D" title="Dictated">D</span> One per Training Partner.</td>
+</tr>
+<tr data-marks="D">
+<td><strong class="sid">S5.7</strong></td>
+<td>Final implementation discussion meeting</td>
+<td><span class="mark mark-D" title="Dictated">D</span> Convene TPs. Discuss implementation detail, requirements, conveniences needed, and <strong>the rules they must follow</strong>.</td>
+</tr>
+<tr data-marks="D">
+<td><strong class="sid">S5.8</strong></td>
+<td>Issue work orders</td>
+<td><span class="mark mark-D" title="Dictated">D</span> <strong>Status change: TP applicant → Training Partner.</strong> This is the empanelment moment.</td>
+</tr>
+</tbody>
+</table></div>
+<blockquote class="callout callout-note" data-marks="I">
+<p><strong><span class="mark mark-I" title="Inference">I</span> Operational note:</strong> the AMS authorisation paragraph you need in TP work orders and SPOC instructions attaches at <strong>S5.6/S5.8</strong>. After S5.8 it cannot be added without a variation. That deadline is this stage, not the start of delivery.</p>
+</blockquote>
+<p><strong>Artifacts out:</strong> sub-committee board note (per course) · CAC document/minutes · board note (per course agenda item) · board resolution · <strong>work order per TP</strong> · implementation meeting minutes.</p>
+
+<h3 id="stage-s6">S6 — Delivery Preparation</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>Step</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr data-marks="D">
+<td><strong class="sid">S6.1</strong></td>
+<td>Agree timeline with DoTE</td>
+<td><span class="mark mark-D" title="Dictated">D</span> Joint timeline implementation begins immediately post-onboarding.</td>
+</tr>
+<tr data-marks="D V">
+<td><strong class="sid">S6.2</strong></td>
+<td><strong>FDP</strong> — Faculty Development Program</td>
+<td><span class="mark mark-D" title="Dictated">D</span> Conducted <strong>by the TP</strong>. Purpose: (a) give faculty the knowledge to understand the course concept, (b) enable them to assist students, (c) <strong>qualify them as external assessors</strong>. <span class="mark mark-V" title="Verified">V</span> <strong>6 days = 4 days course training + 2 days assessment training. Physical. No cost to TNSDC for TP delivery.</strong></td>
+</tr>
+<tr data-marks="D">
+<td><strong class="sid">S6.3</strong></td>
+<td>FDP fund allocation</td>
+<td><span class="mark mark-D" title="Dictated">D</span> Draft a fund-allocation document → disburse to <strong>AD-DSTOs</strong> → who disburse onward to (a) the <strong>host institution</strong> hosting the FDP, and (b) <strong>attending faculty</strong>. <span class="mark mark-D" title="Dictated">D</span> Purpose split: host institution = refreshment; faculty = remuneration.</td>
+</tr>
+<tr data-marks="D">
+<td><strong class="sid">S6.4</strong></td>
+<td>FDP inspection</td>
+<td><span class="mark mark-D" title="Dictated">D</span> Inspect that the FDP is actually being implemented properly.</td>
+</tr>
+<tr data-marks="D">
+<td><strong class="sid">S6.5</strong></td>
+<td><strong>Gate</strong></td>
+<td><span class="mark mark-D" title="Dictated">D</span> Course implementation starts only once there are <strong>sufficient trained staff AND sufficient external assessment staff</strong>.</td>
+</tr>
+<tr data-marks="D">
+<td><strong class="sid">S6.6</strong></td>
+<td>Skill offering mapping — descend to department level</td>
+<td><span class="mark mark-D" title="Dictated">D</span> Earlier stages worked at district × branch. Here it goes to <strong>college × department × course × TP</strong>.</td>
+</tr>
+<tr data-marks="D">
+<td><strong class="sid">S6.7</strong></td>
+<td>Generate <strong>Skill Offering IDs</strong></td>
+<td><span class="mark mark-D" title="Dictated">D</span> A <strong>4-digit ID</strong> per (course × TP) offering.</td>
+</tr>
+<tr data-marks="D">
+<td><strong class="sid">S6.8</strong></td>
+<td>Hand the map to the portal team</td>
+<td><span class="mark mark-D" title="Dictated">D</span> Portal team enables onboarding and course-progress processes.</td>
+</tr>
+<tr data-marks="D">
+<td><strong class="sid">S6.9</strong></td>
+<td>Student onboarding</td>
+<td><span class="mark mark-D" title="Dictated">D</span> By the <strong>college SPOC</strong>. Onboarding = adding students to their college account on the portal.</td>
+</tr>
+<tr data-marks="D">
+<td><strong class="sid">S6.10</strong></td>
+<td>Student enrolment</td>
+<td><span class="mark mark-D" title="Dictated">D</span> By the SPOC. Enrolment = allocating a specific TNSDC course to a student.</td>
+</tr>
+<tr data-marks="D">
+<td><strong class="sid">S6.11</strong></td>
+<td>TP class scheduling</td>
+<td><span class="mark mark-D" title="Dictated">D</span> Enrolment reflects on the TP's portal account → TP schedules classes per college. You prompt them to start.</td>
+</tr>
+<tr data-marks="D">
+<td><strong class="sid">S6.12</strong></td>
+<td>TP API integration</td>
+<td><span class="mark mark-D" title="Dictated">D</span> TP integrates its API with the NM portal to supply <strong>course content, hackathon plan, trainer profile</strong>, etc.</td>
+</tr>
+<tr data-marks="D">
+<td><strong class="sid">S6.13</strong></td>
+<td>Inspection-app sync</td>
+<td><span class="mark mark-D" title="Dictated">D</span> Portal team auto-syncs schedules to the inspection application so <strong>district coordinators</strong> see which course runs in which college at what time.</td>
+</tr>
+</tbody>
+</table></div>
+<blockquote class="callout callout-dictated" data-marks="D">
+<p><strong><span class="mark mark-D" title="Dictated">D</span> Your role boundary, stated explicitly:</strong> you are <strong>not</strong> responsible for coordinating or building the portal. Your responsibility is to <strong>ensure the process happens and resolve issues that arise.</strong> Record this in the RACI as <em>Accountable for outcome, not Responsible for execution.</em></p>
+</blockquote>
+<p><strong>Artifacts out:</strong> FDP fund allocation document · FDP schedules · FDP inspection reports · external assessor roster · <strong>Skill Offering ID map (college × department × course × TP × 4-digit ID)</strong> · portal handover pack · class schedules · inspection app schedule feed.</p>
+
+<h3 id="stage-s7">S7 — Delivery &amp; Assessment</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>Step</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr data-marks="V">
+<td><strong class="sid">S7.1</strong></td>
+<td>Classroom implementation</td>
+<td><span class="mark mark-V" title="Verified">V</span> Physical classroom training at the respective polytechnic colleges. 60 hours.</td>
+</tr>
+<tr data-marks="D">
+<td><strong class="sid">S7.2</strong></td>
+<td>Attendance and data upload</td>
+<td><span class="mark mark-D" title="Dictated">D</span> TP uploads student attendance "and all the other stuff" to the portal during implementation. <strong><a class="oq" href="#oq-13">OQ-13</a>: what else, exactly?</strong></td>
+</tr>
+<tr data-marks="D">
+<td><strong class="sid">S7.3</strong></td>
+<td>Random field inspection</td>
+<td><span class="mark mark-D" title="Dictated">D</span> District coordinators inspect against the synced schedule, at random.</td>
+</tr>
+<tr data-marks="D">
+<td><strong class="sid">S7.4</strong></td>
+<td><strong>Internal exam</strong></td>
+<td><span class="mark mark-D" title="Dictated">D</span> Conducted <strong>halfway through</strong> the course.</td>
+</tr>
+<tr data-marks="D">
+<td><strong class="sid">S7.5</strong></td>
+<td><strong>Industry Visit</strong></td>
+<td><span class="mark mark-D" title="Dictated">D</span> Named as a mandatory implementation component — <strong>but never described.</strong> Sequence, owner, funding and evidence requirement all unknown. <strong><a class="oq" href="#oq-4">OQ-4</a>.</strong></td>
+</tr>
+<tr data-marks="D V">
+<td><strong class="sid">S7.6</strong></td>
+<td><strong>External assessment</strong></td>
+<td><span class="mark mark-D" title="Dictated">D</span> After the course is taught. Conducted by the FDP-certified external assessors. <span class="mark mark-V" title="Verified">V</span> "The final assessment will be conducted by TNSDC and the payment to the training partner(s) will be made only upon achieving the learning outcomes."</td>
+</tr>
+<tr data-marks="D V">
+<td><strong class="sid">S7.7</strong></td>
+<td><strong>Hackathon</strong></td>
+<td><span class="mark mark-D" title="Dictated">D</span> Conducted per the hackathon plan. <span class="mark mark-V" title="Verified">V</span> Mandatory; its cost is included in the agreed per-student rate.</td>
+</tr>
+<tr data-marks="D">
+<td><strong class="sid">S7.8</strong></td>
+<td>Hackathon report</td>
+<td><span class="mark mark-D" title="Dictated">D</span> Uploaded to the portal → <strong>you document and approve it</strong>.</td>
+</tr>
+<tr data-marks="D">
+<td><strong class="sid">S7.9</strong></td>
+<td>Marks upload — dual destination</td>
+<td><span class="mark mark-D" title="Dictated">D</span> After the external exam, marks are uploaded to <strong>the TNSDC/NM portal AND the DoTE portal</strong>.</td>
+</tr>
+<tr data-marks="D">
+<td><strong class="sid">S7.10</strong></td>
+<td>Certificate issue</td>
+<td><span class="mark mark-D" title="Dictated">D</span> On receipt of marks, issue the <strong>skill certificate</strong> stating the student has been provided this skill.</td>
+</tr>
+</tbody>
+</table></div>
+<blockquote class="callout callout-note" data-marks="G V">
+<p><strong><span class="mark mark-G" title="Gap">G</span> Missing: the TP payment step.</strong> The dictation never describes invoicing, verification of the outcome condition, or disbursement to TPs — yet <span class="mark mark-V" title="Verified">V</span> the board note makes payment conditional on achieving learning outcomes. The process model has a course completing and certificates issuing with <strong>no money moving to the TP</strong>. This is a real hole, not a wording issue. <strong><a class="oq" href="#oq-5">OQ-5</a>.</strong></p>
+</blockquote>
+<p><strong>Artifacts out:</strong> attendance records · inspection reports · internal exam records · industry visit records <em>[undefined]</em> · external assessment marks · hackathon plan · <strong>approved hackathon report</strong> · DoTE portal marks submission · <strong>skill certificates</strong>.</p>
+
+<h3 id="stage-s8">S8 — Closure &amp; Feedback</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>Step</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr data-marks="D">
+<td><strong class="sid">S8.1</strong></td>
+<td>Collect student feedback</td>
+<td><span class="mark mark-D" title="Dictated">D</span> How the course went; what could be improved.</td>
+</tr>
+<tr data-marks="D">
+<td><strong class="sid">S8.2</strong></td>
+<td>File as a report to the portal</td>
+<td><span class="mark mark-D" title="Dictated">D</span> For future improvement suggestions.</td>
+</tr>
+<tr data-marks="D">
+<td><strong class="sid">S8.3</strong></td>
+<td>Semester closes</td>
+<td><span class="mark mark-D" title="Dictated">D</span></td>
+</tr>
+<tr data-marks="D">
+<td><strong class="sid">S8.4</strong></td>
+<td><strong>Loop to S0</strong></td>
+<td><span class="mark mark-D" title="Dictated">D</span> "the new semester starts with drafting a new EOI based on the changes that need to be made."</td>
+</tr>
+</tbody>
+</table></div>
+<blockquote class="callout callout-note" data-marks="I">
+<p><strong><span class="mark mark-I" title="Inference">I</span> Note the asymmetry:</strong> student feedback feeds course improvement (S0.2), and TP performance feedback feeds TP allocation (constraint A4 at S3.4). These are <strong>two different feedback channels doing two different jobs</strong> — and only the second is described as having a formal instrument ("feedback forms"). Where student feedback actually enters the next EoI decision is currently informal.</p>
+</blockquote>
+
+</section><section aria-labelledby="5-artifact-registry" class="doc-section"><h2 id="5-artifact-registry">5. Artifact registry</h2>
+<p>Every document the cycle produces, with its owner and the step that creates it. This is the file-plan for the SOP and the manifest for any automation.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Artifact</th>
+<th>Created at</th>
+<th>Owner</th>
+<th>Audit-critical</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DoTE course recommendation letter</td>
+<td>S0.1</td>
+<td>DoTE</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>EoI document</td>
+<td>S1.1</td>
+<td>You</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>Newspaper advertisement + DIPR ad number</td>
+<td>S1.2</td>
+<td>TNSDC/DIPR</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>Portal EoI application records</td>
+<td>S1.3</td>
+<td>Portal</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>Applicant annexures</td>
+<td>S1.5</td>
+<td>Applicant</td>
+<td>✔</td>
+</tr>
+<tr>
+<td><strong>DV checklist (criteria × applicant)</strong></td>
+<td>S1.8</td>
+<td>You</td>
+<td>✔✔</td>
+</tr>
+<tr>
+<td>CCAR (per TP per course)</td>
+<td>S1.12/S1.13</td>
+<td>TP</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>TP lecture material</td>
+<td>S1.12</td>
+<td>TP</td>
+<td>—</td>
+</tr>
+<tr>
+<td><strong>CEC evaluation template (completed)</strong></td>
+<td>S2.7</td>
+<td>Evaluators / You</td>
+<td>✔✔</td>
+</tr>
+<tr>
+<td>CEC attendance register A — arrival</td>
+<td>S2.4</td>
+<td>You</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>CEC attendance register B — sat for evaluation</td>
+<td>S2.4</td>
+<td>You</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>Trainer profile list</td>
+<td>S2.5</td>
+<td>TP</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>CCAR benchmark recommendation</td>
+<td>S2.8</td>
+<td>CEC</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Student count baseline + 1.25× projection</td>
+<td>S3.1/S3.2</td>
+<td>You</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>Prior two-semester mapping history</td>
+<td>S3.3</td>
+<td>You</td>
+<td>✔</td>
+</tr>
+<tr>
+<td><strong>Preliminary mapping (A3 print)</strong></td>
+<td>S3.5</td>
+<td>You</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>CSC minutes + moderated rate schedule</td>
+<td>S3.6</td>
+<td>CSC</td>
+<td>✔✔</td>
+</tr>
+<tr>
+<td>Confirmation mail #1 + TP reply</td>
+<td>S3.7</td>
+<td>You / TP</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>TRET question paper</td>
+<td>S4.2</td>
+<td>Contractor</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>TRET vetting sign-off</td>
+<td>S4.3</td>
+<td>Internal pedagogy team</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>TRET results register</td>
+<td>S4.6</td>
+<td>Assessment partner</td>
+<td>✔✔</td>
+</tr>
+<tr>
+<td>Trainer sufficiency matrix</td>
+<td>S4.7</td>
+<td>You</td>
+<td>✔</td>
+</tr>
+<tr>
+<td><strong>Final mapping (post-TRET)</strong></td>
+<td>S4.8</td>
+<td>You</td>
+<td>✔✔</td>
+</tr>
+<tr>
+<td>Confirmation mail #2 + TP reply</td>
+<td>S4.8</td>
+<td>You / TP</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>Sub-committee board note (per course)</td>
+<td>S5.1</td>
+<td>You</td>
+<td>✔✔</td>
+</tr>
+<tr>
+<td>CAC document / minutes</td>
+<td>S5.2</td>
+<td>You / CAC</td>
+<td>✔✔</td>
+</tr>
+<tr>
+<td>Board note (per course agenda)</td>
+<td>S5.3</td>
+<td>You</td>
+<td>✔✔</td>
+</tr>
+<tr>
+<td>Board resolution</td>
+<td>S5.5</td>
+<td>Board</td>
+<td>✔✔</td>
+</tr>
+<tr>
+<td><strong>Work order (per TP)</strong></td>
+<td>S5.6/S5.8</td>
+<td>TNSDC</td>
+<td>✔✔</td>
+</tr>
+<tr>
+<td>Implementation meeting minutes</td>
+<td>S5.7</td>
+<td>You</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>FDP fund allocation document</td>
+<td>S6.3</td>
+<td>You</td>
+<td>✔✔</td>
+</tr>
+<tr>
+<td>FDP inspection report</td>
+<td>S6.4</td>
+<td>You / coordinators</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>External assessor roster</td>
+<td>S6.2/S6.5</td>
+<td>TP / DoTE</td>
+<td>✔</td>
+</tr>
+<tr>
+<td><strong>Skill Offering ID map</strong></td>
+<td>S6.6/S6.7</td>
+<td>You</td>
+<td>✔✔</td>
+</tr>
+<tr>
+<td>Class schedules</td>
+<td>S6.11</td>
+<td>TP (portal)</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Attendance uploads</td>
+<td>S7.2</td>
+<td>TP (portal)</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>Field inspection reports</td>
+<td>S7.3</td>
+<td>District coordinators</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>Internal exam records</td>
+<td>S7.4</td>
+<td>TP</td>
+<td>—</td>
+</tr>
+<tr>
+<td>External assessment marks</td>
+<td>S7.6</td>
+<td>TNSDC</td>
+<td>✔✔</td>
+</tr>
+<tr>
+<td>Hackathon plan</td>
+<td>S6.12</td>
+<td>TP</td>
+<td>✔</td>
+</tr>
+<tr>
+<td><strong>Approved hackathon report</strong></td>
+<td>S7.8</td>
+<td>TP → You</td>
+<td>✔✔</td>
+</tr>
+<tr>
+<td>DoTE portal marks submission</td>
+<td>S7.9</td>
+<td>You / Portal</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>Skill certificates</td>
+<td>S7.10</td>
+<td>TNSDC</td>
+<td>✔✔</td>
+</tr>
+<tr>
+<td>Student feedback report</td>
+<td>S8.1/S8.2</td>
+<td>Portal</td>
+<td>✔</td>
+</tr>
+<tr>
+<td><strong>MASTER TRACKING LEDGER</strong></td>
+<td>S1.3 → S8.4</td>
+<td><strong>You</strong></td>
+<td>✔✔✔</td>
+</tr>
+</tbody>
+</table></div>
+
+</section><section aria-labelledby="6-the-master-tracking-ledger-the-thing-you-own" class="doc-section"><h2 id="6-the-master-tracking-ledger-the-thing-you-own">6. The Master Tracking Ledger — the thing you own</h2>
+<p data-marks="D"><span class="mark mark-D" title="Dictated">D</span> Stated requirement, verbatim in substance: <em>a solid record of everyone who applied to the EoI, which subject they applied for, who came for and cleared document verification, and who came for and cleared each subsequent step — per subject. Clean, well tracked, because it will come into question for <strong>audit, RTI and transparency</strong>, and to be accountable for the government selection process.</em></p>
+<p data-marks="I"><span class="mark mark-I" title="Inference">I</span> That is a description of a <strong>state machine over a well-defined entity</strong>, and getting the entity right is the whole design. Four entities, not one:</p>
+<h3 id="6-1-entity-model">6.1 Entity model</h3>
+<pre class="code"><code>APPLICATION            = (TP_applicant × Course)        ← the primary tracked entity
+  |
+  └─ carries: state, timestamps, evidence links, per-gate outcome
+
+TP_PROFILE             = (TP_applicant)
+  |
+  └─ carries: 3-yr avg revenue, trainer count, years in service, trainees delivered,
+              preferred zones/districts (capture #1 and #2), prior-cycle performance
+
+ALLOCATION             = (Course × TP × Domain × District/Zone × College)
+  |
+  └─ carries: projected student count, cost per student, total cost, Skill Offering ID
+
+TRAINER                = (TP × Trainer × Course)
+  |
+  └─ carries: contract status, TRET attempt, TRET result, districts committed,
+              primary or substitute
+</code></pre>
+<p><strong>Why APPLICATION and not TP:</strong> a TP can pass DV once but pass CEC for UI/UX and fail for GenAI, be mapped in three districts and dropped in one after TRET. Tracking at TP level loses all of that. <strong>The row is the pair.</strong></p>
+<h3 id="6-2-state-machine-for-application">6.2 State machine for APPLICATION</h3>
+<pre class="code"><code>EOI_SUBMITTED
+  → DV_INVITED → DV_NO_SHOW ⊗
+               → DV_ATTENDED → DV_FAILED ⊗
+                             → DV_CLEARED
+  → CCAR_PENDING → CCAR_OVERDUE ⊗        (2-week cure, due 1 week before CEC)
+                 → CCAR_RECEIVED
+  → CEC_INVITED → CEC_NO_SHOW ⊗
+                → CEC_ATTENDED → CEC_FAILED ⊗
+                               → CEC_CLEARED
+  → PRELIM_MAPPED  |  CLEARED_UNMAPPED        (cleared but no district assigned)
+  → CSC_PRICED
+  → CONFIRM1_SENT → CONFIRM1_DECLINED ⊗
+                  → CONFIRM1_ACCEPTED
+  → TRET_SCHEDULED → TRET_SHORTFALL → DROPPED ⊗
+                                    → REMAPPED  ⟲ back to PRELIM_MAPPED
+                   → TRET_SUFFICIENT
+  → FINAL_MAPPED
+  → CONFIRM2_ACCEPTED
+  → SUBCOMMITTEE_APPROVED
+  → CAC_APPROVED
+  → BOARD_APPROVED
+  → WORK_ORDER_ISSUED   ← status flips to TRAINING PARTNER
+  → DELIVERING → COMPLETED
+⊗ = terminal exit. Every ⊗ needs a recorded reason code.
+</code></pre>
+<blockquote class="callout callout-note" data-marks="I">
+<p><strong><span class="mark mark-I" title="Inference">I</span> The audit defence is the exit reasons, not the pass list.</strong> An RTI query will not ask who succeeded — it will ask <strong>why a particular applicant did not</strong>. Every ⊗ transition must carry a reason code and a link to the evidencing artifact (DV checklist row, CEC template row, TRET result row). Without that, the ledger records <em>what</em> happened and cannot explain <em>why</em>, which is exactly the question that gets asked.</p>
+</blockquote>
+<h3 id="6-3-minimum-viable-ledger-columns">6.3 Minimum viable ledger columns</h3>
+<p><code>application_id · tp_name · tp_id · course · domain · eoi_phase · eoi_date · preferred_zones · preferred_districts_v1 · preferred_districts_v2 · dv_date · dv_attended · dv_result · dv_criteria_E1..E7 · avg_revenue_3yr · ccar_received_date · cec_date · cec_attended · cec_result · cec_evaluator · prelim_districts · prelim_students · cost_per_student · total_cost · revenue_cap_headroom · confirm1_sent · confirm1_result · trainers_declared · tret_sat · tret_passed · sufficiency_result · final_districts · final_students · confirm2_result · subcom_agenda_no · cac_date · board_agenda_no · board_result · work_order_no · work_order_date · exit_state · exit_reason_code · evidence_links[]</code></p>
+
+</section><section aria-labelledby="7-flowcharts" class="doc-section"><h2 id="7-flowcharts">7. Flowcharts</h2>
+<h3 id="fig-1-cycle-overview">Fig. 1 — Cycle overview</h3>
+<div class="diagram"><pre class="mermaid">flowchart TD
+    S0["S0 · Cycle Initiation&lt;br/&gt;DoTE course list · prior feedback"]
+    S1["S1 · Sourcing and Eligibility&lt;br/&gt;EoI · Document Verification"]
+    S2["S2 · Technical Qualification&lt;br/&gt;Course Evaluation Committee"]
+    S3["S3 · Preliminary Mapping and Commercials&lt;br/&gt;Mapping · Cost Scrutiny Committee"]
+    S4["S4 · Trainer Qualification&lt;br/&gt;TRET · Remap"]
+    S5["S5 · Governance Approval&lt;br/&gt;Sub-Committee · CAC · Board · Work Orders"]
+    S6["S6 · Delivery Preparation&lt;br/&gt;FDP · Skill Offering IDs · Enrolment"]
+    S7["S7 · Delivery and Assessment&lt;br/&gt;Classes · Exams · Hackathon · Certificates"]
+    S8["S8 · Closure and Feedback"]
+
+    S0 --&gt; S1 --&gt; S2 --&gt; S3 --&gt; S4 --&gt; S5 --&gt; S6 --&gt; S7 --&gt; S8
+    S4 -.-&gt;|"trainer shortfall&lt;br/&gt;forces full remap"| S3
+    S8 ==&gt;|"feedback drives next EoI"| S0
+
+    LEDGER["MASTER TRACKING LEDGER&lt;br/&gt;state per TP x Course&lt;br/&gt;audit · RTI · transparency"]
+    S1 -.-&gt; LEDGER
+    S2 -.-&gt; LEDGER
+    S3 -.-&gt; LEDGER
+    S4 -.-&gt; LEDGER
+    S5 -.-&gt; LEDGER
+
+    style S4 fill:#ffe6e6,stroke:#c00,stroke-width:2px
+    style S3 fill:#fff4e6,stroke:#e67e00,stroke-width:2px
+    style LEDGER fill:#e8f0fe,stroke:#1a56db,stroke-width:2px
+</pre></div>
+<h3 id="fig-2-s1-and-s2-sourcing-technical-qualification">Fig. 2 — S1 and S2: Sourcing → Technical Qualification</h3>
+<div class="diagram"><pre class="mermaid">flowchart TD
+    A["S0.1 DoTE course recommendation letter"] --&gt; B["S1.1 Draft EoI for the semester"]
+    B --&gt; C["S1.2 Publish&lt;br/&gt;newspaper ad plus website"]
+    C --&gt; D["S1.3 EoI window opens on NM portal"]
+    D --&gt; E["S1.3 Apply against listed course&lt;br/&gt;or select Other to propose a course"]
+    E --&gt; F["S1.4 Capture preferred zones and districts&lt;br/&gt;PREFERENCE PASS 1"]
+    F --&gt; G["S1.5 Applicant fills annexures&lt;br/&gt;carried physically to DV"]
+    G --&gt; H["S1.6 EoI window closes&lt;br/&gt;no further applicants accepted"]
+    H --&gt; COV{"Sufficient applicants&lt;br/&gt;and course coverage?"}
+    COV --&gt;|"No"| REFLOAT["S1.6a Re-float EoI as Phase 2&lt;br/&gt;observed in 2026-27 Odd"]
+    REFLOAT --&gt; D
+    COV --&gt;|"Yes"| I["S1.7 Fix Document Verification date"]
+
+    I --&gt; J["S1.8 Document Verification&lt;br/&gt;against eligibility floor E1-E7"]
+    J --&gt; K{"Meets all criteria?"}
+    K --&gt;|"No"| KX["EXIT · record reason code"]
+    K --&gt;|"Yes"| L["S1.9 Re-confirm districts&lt;br/&gt;PREFERENCE PASS 2"]
+    L --&gt; M["S1.10 Reality check&lt;br/&gt;state the real implementation friction&lt;br/&gt;obtain readiness confirmation"]
+    M --&gt; N["S1.11 Instruct trainer contracting&lt;br/&gt;close contracts in 1-3 weeks"]
+    N --&gt; O["S1.12 Collect lectures and CCAR"]
+    O --&gt; P{"CCAR in hand?"}
+    P --&gt;|"No"| Q["S1.13 Two-week cure window&lt;br/&gt;finalised CCAR due one week before CEC"]
+    Q --&gt; R
+    P --&gt;|"Yes"| R["S1.14 DV cleared list published to ledger"]
+
+    R --&gt; S["S2.1 Convene CEC&lt;br/&gt;email DoTE, industry members, TP applicants"]
+    S --&gt; T["S2.2 Seat stream and department matched evaluators&lt;br/&gt;Polytechnic to DoTE and Govt Polytechnic professors"]
+    T --&gt; U["S2.3 Issue evaluation template BEFORE evaluation"]
+    U --&gt; V["S2.4 Prepare TWO attendance registers&lt;br/&gt;arrived and sat for evaluation"]
+    V --&gt; W["S2.5 TP submits trainer profiles&lt;br/&gt;those who will write TRET"]
+    W --&gt; X["S2.6 TP presents CCAR"]
+    X --&gt; Y["S2.7 Evaluate and record in template&lt;br/&gt;readable, documented, auditable"]
+    Y --&gt; Z["S2.8 Identify best CCAR to standardise across TPs"]
+    Y --&gt; AA["S2.9 Industry members validate&lt;br/&gt;does the course close a real skill gap"]
+    Z --&gt; AB{"S2.10 Cleared for this course?"}
+    AA --&gt; AB
+    AB --&gt;|"No"| ABX["EXIT · record reason code"]
+    AB --&gt;|"Yes"| AC["Proceed to S3 Mapping"]
+
+    style J fill:#fff4e6,stroke:#e67e00
+    style Y fill:#e8f0fe,stroke:#1a56db
+    style AC fill:#e6ffe6,stroke:#0a0
+</pre></div>
+<h3 id="fig-3-s3-and-s4-mapping-commercials-tret-and-the-rework-loop">Fig. 3 — S3 and S4: Mapping, Commercials, TRET and the rework loop</h3>
+<div class="diagram"><pre class="mermaid">flowchart TD
+    IN["CEC cleared list&lt;br/&gt;TP x Course"] --&gt; B1["S3.1 Build demand baseline&lt;br/&gt;students per district, per domain, per zone"]
+    B1 --&gt; B2["S3.2 Project forward&lt;br/&gt;1.25 x previous semester count"]
+    B2 --&gt; C1["S3.3 Assign courses to districts"]
+
+    subgraph COV["S3.3 Coverage constraints"]
+      C2["C1 Pull previous TWO semester mappings"]
+      C3["C2 HARD: no repeat course in a district&lt;br/&gt;the same cohort moves up"]
+      C4["C3 HARD: every domain in every district&lt;br/&gt;must have a course"]
+      C5["C4 HARD: only CEC-cleared courses eligible"]
+    end
+    C1 --&gt; COV --&gt; D1["S3.4 Assign TPs to districts"]
+
+    subgraph ALLOC["S3.4 Allocation constraints"]
+      D2["A1 Prefer districts the TP handled before"]
+      D3["A2 New TP gets a small allocation"]
+      D4["A4 Prior performance from feedback forms"]
+      D5["A5 Honour preferred zones and districts"]
+      D6["A6 SOFT: no single-TP monopoly on a course&lt;br/&gt;unless long-term partner · discretionary"]
+      D7["A7 HARD: students x cost per student&lt;br/&gt;must be under 33 percent of 3-yr avg revenue"]
+    end
+    D1 --&gt; ALLOC --&gt; E1["S3.5 Print mapping on A3&lt;br/&gt;send to authorities for decision"]
+
+    E1 --&gt; F1["S3.6 Cost Scrutiny Committee"]
+    F1 --&gt; F2["Anchor: PMKVY 3.0 norm&lt;br/&gt;42 rupees per hour x 60 hours = 2520"]
+    F2 --&gt; F3["Moderate down to actual rate&lt;br/&gt;observed 600 · 1400 · 1450 per student"]
+    F3 --&gt; F4["Present estimate to TPs · they agree or disagree"]
+    F4 --&gt; G1["S3.7 CONFIRMATION 1&lt;br/&gt;course plus price plus districts"]
+    G1 --&gt; G2["TP returns trainer count&lt;br/&gt;requirement 1 trainer per 60 students per college"]
+
+    G2 --&gt; H1["S4.1 Plan TRET"]
+    H1 --&gt; H2["S4.2 Question papers drafted by external contractor"]
+    H2 --&gt; H3["S4.3 Vetted by internal pedagogy and assessment team"]
+    H3 --&gt; H4["S4.4 Assessment partners build the online test"]
+    H4 --&gt; H5["S4.5 Colleges provide venue, time, systems"]
+    H5 --&gt; H6["S4.6 Conduct TRET · collect results"]
+    H6 --&gt; H7{"S4.7 Enough qualified trainers&lt;br/&gt;plus substitutes for every committed district?"}
+
+    H7 --&gt;|"Yes"| K1["S4.8.5 Decide: second TRET or proceed"]
+    H7 --&gt;|"No"| I1["S4.8.1 TP may be dropped&lt;br/&gt;for that course or district"]
+    I1 --&gt; I2{"Does dropping leave the course&lt;br/&gt;with one non-long-term TP only?"}
+    I2 --&gt;|"No"| K1
+    I2 --&gt;|"Yes"| I3["S4.8.2 Course must be dropped&lt;br/&gt;constraint A6 violated"]
+    I3 --&gt; I4["S4.8.3 Constraint C3 now broken&lt;br/&gt;a domain-district has no course"]
+    I4 --&gt; I5["S4.8.4 FULL REMAP REQUIRED"]
+    I5 --&gt; C1
+
+    K1 --&gt; K2["S4.8.6 CONFIRMATION 2&lt;br/&gt;course, students, trainers, districts, terms"]
+    K2 --&gt; OUT["Proceed to S5 Governance Approval"]
+
+    style D7 fill:#ffe6e6,stroke:#c00,stroke-width:2px
+    style I5 fill:#ffe6e6,stroke:#c00,stroke-width:2px
+    style H7 fill:#fff4e6,stroke:#e67e00,stroke-width:2px
+    style OUT fill:#e6ffe6,stroke:#0a0
+</pre></div>
+<h3 id="fig-4-s5-governance-approval-order-disputed-see-oq-1">Fig. 4 — S5: Governance approval (⚠ order disputed — see <a class="oq" href="#oq-1">OQ-1</a>)</h3>
+<div class="diagram"><pre class="mermaid">flowchart TD
+    IN["Confirmation 2 received&lt;br/&gt;final mapping fixed"] --&gt; Q{"OQ-1 UNRESOLVED&lt;br/&gt;which body sits first?"}
+
+    Q --&gt;|"Documented order&lt;br/&gt;16.06 then 23.06"| A1["S5.1 SUB-COMMITTEE&lt;br/&gt;approves the course slate&lt;br/&gt;and the course contents"]
+    A1 --&gt; A2["S5.2 COURSE ALLOCATION COMMITTEE&lt;br/&gt;allocates approved courses to colleges&lt;br/&gt;maps TPs · chaired by MD TNSDC with DoTE"]
+    A2 --&gt; M1["S5.3 Refine into Board Note"]
+
+    Q --&gt;|"Dictated order"| B1["S5.2 COURSE ALLOCATION COMMITTEE&lt;br/&gt;TPs shortlisted per course&lt;br/&gt;domains, districts, students, cost"]
+    B1 --&gt; B2["S5.1 SUB-COMMITTEE board note&lt;br/&gt;course, TP, cost, students,&lt;br/&gt;syllabus, content, assessment matrix"]
+    B2 --&gt; M1
+
+    M1 --&gt; M2["S5.4 Board meeting&lt;br/&gt;one numbered agenda item per course"]
+    M2 --&gt; M3{"S5.5 Board resolves to approve?"}
+    M3 --&gt;|"No"| MX["Rework the agenda item"]
+    MX --&gt; M1
+    M3 --&gt;|"Yes"| N1["S5.6 Draft work orders per TP"]
+    N1 --&gt; N2["S5.7 Final implementation discussion meeting&lt;br/&gt;requirements, conveniences, rules to follow"]
+    N2 --&gt; N3["S5.8 ISSUE WORK ORDERS&lt;br/&gt;TP applicant becomes TRAINING PARTNER"]
+    N3 --&gt; OUT["Proceed to S6 Delivery Preparation"]
+
+    NOTE["CAC decision factors on record:&lt;br/&gt;sector expertise · previous experience ·&lt;br/&gt;trainer expertise, availability, geography ·&lt;br/&gt;prior implementation feedback ·&lt;br/&gt;adequate quality trainers · TP choice ·&lt;br/&gt;allocation proportional to TRET-qualified trainers"]
+    A2 -.-&gt; NOTE
+    B1 -.-&gt; NOTE
+
+    style Q fill:#ffe6e6,stroke:#c00,stroke-width:3px
+    style N3 fill:#e6ffe6,stroke:#0a0,stroke-width:2px
+</pre></div>
+<h3 id="fig-5-s6-s7-s8-delivery-preparation-through-closure">Fig. 5 — S6, S7, S8: Delivery preparation through closure</h3>
+<div class="diagram"><pre class="mermaid">flowchart TD
+    W["S5.8 Work orders issued"] --&gt; A["S6.1 Agree delivery timeline with DoTE"]
+    A --&gt; B["S6.2 FDP conducted by the TP&lt;br/&gt;6 days · 4 course plus 2 assessment · physical"]
+    B --&gt; C["S6.3 FDP fund allocation document&lt;br/&gt;funds to AD-DSTOs"]
+    C --&gt; C2["AD-DSTO disburses&lt;br/&gt;host institution: refreshment&lt;br/&gt;faculty: remuneration"]
+    B --&gt; D["S6.4 Inspect FDP delivery"]
+    D --&gt; E{"S6.5 Sufficient trained faculty AND&lt;br/&gt;sufficient external assessors?"}
+    E --&gt;|"No"| B
+    E --&gt;|"Yes"| F["Implementation may begin"]
+
+    A --&gt; G["S6.6 Descend to department level&lt;br/&gt;college x department x course x TP"]
+    G --&gt; H["S6.7 Generate 4-digit Skill Offering IDs"]
+    H --&gt; I["S6.8 Hand map to portal team"]
+    I --&gt; J["S6.9 SPOC onboards students&lt;br/&gt;adds students to college account"]
+    J --&gt; K["S6.10 SPOC enrols students&lt;br/&gt;allocates the specific course"]
+    K --&gt; L["S6.11 Enrolment reflects on TP portal account&lt;br/&gt;TP schedules classes per college"]
+    L --&gt; M["S6.12 TP integrates API with NM portal&lt;br/&gt;course content, hackathon plan, trainer profile"]
+    M --&gt; N["S6.13 Portal syncs schedules to inspection app"]
+
+    F --&gt; O["S7.1 Classroom implementation · 60 hours"]
+    N --&gt; O
+    O --&gt; P["S7.2 TP uploads attendance and delivery data"]
+    N --&gt; Q["S7.3 District coordinators inspect at random"]
+    O --&gt; R["S7.4 Internal exam at the halfway point"]
+    R --&gt; S["S7.5 Industry Visit&lt;br/&gt;UNSPECIFIED · see OQ-4"]
+    S --&gt; T["S7.6 External assessment&lt;br/&gt;by FDP-certified assessors"]
+    T --&gt; U["S7.7 Hackathon per the hackathon plan"]
+    U --&gt; V["S7.8 Hackathon report uploaded&lt;br/&gt;you document and approve"]
+    T --&gt; X["S7.9 Marks uploaded to NM portal AND DoTE portal"]
+    X --&gt; Y["S7.10 Issue skill certificates"]
+    V --&gt; Y
+
+    Y --&gt; Z["S8.1 Collect student feedback"]
+    Z --&gt; AA["S8.2 File feedback report to portal"]
+    AA --&gt; AB["S8.3 Semester closes"]
+    AB ==&gt;|"S8.4 changes feed the next EoI"| AC["S0 Next cycle"]
+
+    PAY["TP PAYMENT STEP&lt;br/&gt;MISSING FROM THE PROCESS&lt;br/&gt;board note: payment only on&lt;br/&gt;achieving learning outcomes&lt;br/&gt;see OQ-5"]
+    T -.-&gt; PAY
+
+    style S fill:#ffe6e6,stroke:#c00,stroke-width:2px
+    style PAY fill:#ffe6e6,stroke:#c00,stroke-width:3px
+    style Y fill:#e6ffe6,stroke:#0a0
+</pre></div>
+<h3 id="fig-6-application-ledger-state-machine">Fig. 6 — Application ledger state machine</h3>
+<div class="diagram"><pre class="mermaid">stateDiagram-v2
+    [*] --&gt; EOI_SUBMITTED
+    EOI_SUBMITTED --&gt; DV_INVITED
+    DV_INVITED --&gt; DV_NO_SHOW
+    DV_INVITED --&gt; DV_ATTENDED
+    DV_ATTENDED --&gt; DV_FAILED
+    DV_ATTENDED --&gt; DV_CLEARED
+    DV_CLEARED --&gt; CCAR_PENDING
+    CCAR_PENDING --&gt; CCAR_OVERDUE
+    CCAR_PENDING --&gt; CCAR_RECEIVED
+    CCAR_RECEIVED --&gt; CEC_INVITED
+    CEC_INVITED --&gt; CEC_NO_SHOW
+    CEC_INVITED --&gt; CEC_ATTENDED
+    CEC_ATTENDED --&gt; CEC_FAILED
+    CEC_ATTENDED --&gt; CEC_CLEARED
+    CEC_CLEARED --&gt; PRELIM_MAPPED
+    CEC_CLEARED --&gt; CLEARED_UNMAPPED
+    PRELIM_MAPPED --&gt; CSC_PRICED
+    CSC_PRICED --&gt; CONFIRM1_SENT
+    CONFIRM1_SENT --&gt; CONFIRM1_DECLINED
+    CONFIRM1_SENT --&gt; CONFIRM1_ACCEPTED
+    CONFIRM1_ACCEPTED --&gt; TRET_SCHEDULED
+    TRET_SCHEDULED --&gt; TRET_SHORTFALL
+    TRET_SCHEDULED --&gt; TRET_SUFFICIENT
+    TRET_SHORTFALL --&gt; DROPPED
+    TRET_SHORTFALL --&gt; PRELIM_MAPPED : remap
+    TRET_SUFFICIENT --&gt; FINAL_MAPPED
+    FINAL_MAPPED --&gt; CONFIRM2_ACCEPTED
+    CONFIRM2_ACCEPTED --&gt; SUBCOMMITTEE_APPROVED
+    SUBCOMMITTEE_APPROVED --&gt; CAC_APPROVED
+    CAC_APPROVED --&gt; BOARD_APPROVED
+    BOARD_APPROVED --&gt; WORK_ORDER_ISSUED
+    WORK_ORDER_ISSUED --&gt; DELIVERING
+    DELIVERING --&gt; COMPLETED
+    COMPLETED --&gt; [*]
+
+    DV_NO_SHOW --&gt; [*]
+    DV_FAILED --&gt; [*]
+    CCAR_OVERDUE --&gt; [*]
+    CEC_NO_SHOW --&gt; [*]
+    CEC_FAILED --&gt; [*]
+    CLEARED_UNMAPPED --&gt; [*]
+    CONFIRM1_DECLINED --&gt; [*]
+    DROPPED --&gt; [*]
+
+    note right of DROPPED
+        Every terminal exit must carry
+        a reason code and a link to the
+        evidencing artifact. The exits
+        are the audit and RTI defence,
+        not the pass list.
+    end note
+</pre></div>
+
+</section><section aria-labelledby="8-what-the-governance-documents-add-that-the-dictation-did-not" class="doc-section"><h2 id="8-what-the-governance-documents-add-that-the-dictation-did-not">8. What the governance documents add that the dictation did not</h2>
+<p>Verified facts from the project files, useful to the model and not present in the dictation.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>Finding</th>
+<th>Source</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>V1</td>
+<td>The course list originates in a <strong>DoTE Course Recommendation Letter</strong> (No. DOTE/100/2026-Y2, 24.02.2026). The EoI is downstream of it.</td>
+<td>Board note</td>
+</tr>
+<tr>
+<td>V2</td>
+<td><strong>Two EoI phases</strong> were run in 2026-27 Odd, with two CEC phases (27–28.02 and 08.05). Re-floating is evidently a live contingency.</td>
+<td>Board note, sub-committee paper</td>
+</tr>
+<tr>
+<td>V3</td>
+<td>CAC was constituted on <strong>Board direction at the 39th Board meeting, 12.08.2025</strong> — it is a standing body with a mandate, not an ad-hoc convening.</td>
+<td>Board note</td>
+</tr>
+<tr>
+<td>V4</td>
+<td>CAC allocation is explicitly <strong>proportional to TRET-qualified trainer count</strong>.</td>
+<td>Board note (repeated across agenda items)</td>
+</tr>
+<tr>
+<td>V5</td>
+<td>Cost anchor is <strong>PMKVY 3.0 Common Cost Norms, ₹42/hr × 60 hrs = ₹2,520</strong>, moderated by the CSC to the delivered rate.</td>
+<td>Board note</td>
+</tr>
+<tr>
+<td>V6</td>
+<td><strong>Parallel non-EoI delivery tracks exist</strong> and are not covered by this process at all: <strong>Schneider CoEs</strong> (6 polytechnics, curriculum submitted to DoTE, 3,880 students, paid as ₹764.26/student travel allowance at ₹0.75/km to institutions) and <strong>TATA Industry 4.0 Labs</strong> (44 polytechnics). TANCAM/TANSAM appear as government CoE partners. See <strong><a class="oq" href="#oq-7">OQ-7</a></strong>.</td>
+<td>Board note</td>
+</tr>
+<tr>
+<td>V7</td>
+<td>Sub-committee and board papers are structured as <strong>one numbered agenda item per course</strong>, each a self-contained proposal with the same seven-section skeleton. This is a template, and it is reusable.</td>
+<td>Sub-committee paper §5.1–5.18</td>
+</tr>
+<tr>
+<td>V8</td>
+<td>EoI funnel is recorded as <strong>received vs. CEC-recommended</strong> per course (e.g. PCB Design &amp; Testing: 14 received → 7 recommended). This is a ledger output the board papers already expect.</td>
+<td>Sub-committee paper</td>
+</tr>
+<tr>
+<td>V9</td>
+<td>Payment condition on record: <strong>"payment to the training partner(s) will be made only upon achieving the learning outcomes."</strong></td>
+<td>Board note, every agenda item</td>
+</tr>
+<tr>
+<td>V10</td>
+<td>Skill courses are <strong>credit-bearing</strong>.</td>
+<td>Sub-committee paper</td>
+</tr>
+</tbody>
+</table></div>
+
+</section><section aria-labelledby="9-structural-findings" class="doc-section"><h2 id="9-structural-findings">9. Structural findings</h2>
+<h3 id="9-1-the-critical-path-is-not-the-delivery-it-is-s3s4s5">9.1 The critical path is not the delivery — it is S3→S4→S5</h3>
+<p>Everything from S6 onward is execution against a fixed plan. Everything from S0 to S5 is a <strong>serial approval chain with no parallelism</strong>, where each body can only sit after the previous one has produced its paper. The observed 2026-27 Odd calendar makes the shape visible:</p>
+<p><code>06.02</code> EoI ad → <code>23.02</code>/<code>06.04</code> windows close → <code>27-28.02</code>/<code>08.05</code> CEC → <code>15.05</code> CSC → <code>16.06</code> Sub-Cttee → <code>23.06</code> CAC → <code>04.07</code> Board note → work orders → FDP → delivery.</p>
+<p>That is <strong>five months from advertisement to board note</strong>, for a 60-hour course. The schedule risk is concentrated entirely before a single student is taught. Any Gantt built from this model should show S0–S5 as the critical path and S6–S8 as the buffer-free tail.</p>
+<h3 id="9-2-the-tret-rework-loop-is-the-largest-unpriced-risk">9.2 The TRET rework loop is the largest unpriced risk</h3>
+<p>The loop <code>S4.8 → S3.3</code> is the only backward edge in the whole process that can fire <strong>after</strong> pricing, after confirmation #1, and potentially after committee papers have been drafted. Its cascade is three-deep and fully specified in your own account:</p>
+<blockquote class="callout callout-note">
+<p>insufficient trainers → TP dropped → course left with one non-long-term TP → course dropped → a domain-district loses coverage → <strong>full remap</strong>.</p>
+</blockquote>
+<p>Three observations:</p>
+<ol>
+<li><strong>The trigger is exogenous.</strong> TRET pass rate is determined by TP hiring quality and question difficulty. Nothing upstream forecasts it. You discover the number at S4.6 and must react.</li>
+<li><strong>Nothing upstream hedges it.</strong> The trainer count collected at S3.7 is <em>declared</em>, not <em>qualified</em>. The gap between declared and qualified is the entire risk, and it is never estimated in advance.</li>
+<li><strong>The cheapest fix is a prior, not a process change.</strong> Last cycle's TRET pass rate per TP per course is already in your records. Applying it as a haircut at S3.4 — allocate against <code>declared_trainers × historical_pass_rate</code> rather than <code>declared_trainers</code> — converts a rework loop into an up-front discount. That is a two-column change to the mapping sheet.</li>
+</ol>
+<p><strong>Falsifiable prediction:</strong> if TRET pass rate is not modelled at S3.4, at least one course will require remapping in any cycle where a new TP holds a majority allocation for that course. Test it against the 2026-27 Odd record — if no remap occurred, the pass rates were high enough to mask the exposure, not absent.</p>
+<h3 id="9-3-s3-is-a-constraint-satisfaction-problem-wearing-a-spreadsheet-costume">9.3 S3 is a constraint satisfaction problem wearing a spreadsheet costume</h3>
+<p>Stated plainly, S3.3 + S3.4 is: assign <code>(course, TP)</code> pairs to <code>(district, domain)</code> cells subject to three hard coverage constraints (C2, C3, C4), one hard financial constraint (A7), one soft anti-concentration constraint (A6), and four soft preference constraints (A1, A2, A4, A5) — with the objective of full coverage.</p>
+<p>That is a textbook constrained assignment problem. Consequences worth stating:</p>
+<ul>
+<li><strong>It may be infeasible, and infeasibility is informative.</strong> If C3 (every domain covered in every district) cannot be satisfied given the CEC-cleared TP pool and the A7 revenue caps, that is not a mapping failure — it is evidence that the EoI under-sourced a domain, and it should trigger S1.6a (re-float), which is exactly what happened with PCB Design &amp; Testing in Phase 2. <strong>Currently that diagnosis is reached by hand, late.</strong> A feasibility check run immediately after S2.10 would surface it weeks earlier.</li>
+<li><strong>Automation target, ranked.</strong> If you automate one thing in this process, automate the <strong>A7 headroom calculation</strong> — it is pure arithmetic on data you already collect at DV, it is a hard constraint, and violating it is the kind of error that surfaces in audit. Automating the full assignment is second; it requires encoding A6's discretion, which is explicitly political and should stay human.</li>
+<li><strong>The discretion in A6 is a feature, not sloppiness</strong> — but it must be <em>logged</em>. A discretionary monopoly exception with no recorded rationale is the single most attackable decision in the whole cycle under RTI.</li>
+</ul>
+<h3 id="9-4-two-structural-holes">9.4 Two structural holes</h3>
+<ul>
+<li><strong>No TP payment step (<a class="oq" href="#oq-5">OQ-5</a>).</strong> The process ends at certificates. The board note conditions payment on learning outcomes. Between "marks uploaded" and "money disbursed" there is an unmodelled verification-and-invoice process that someone owns.</li>
+<li><strong>No outcome tracking beyond the certificate.</strong> Feedback is collected on <em>how the course went</em>, not on <em>what happened to the student</em>. Every downstream allocation decision (A4, "past performance from feedback forms") therefore rests on satisfaction data, not employment data. That is a known structural weakness of the wider Indian skilling apparatus and it is worth naming, though fixing it is well outside this process model's scope.</li>
+</ul>
+<h3 id="9-5-strongest-objection-to-this-model">9.5 Strongest objection to this model</h3>
+<p>It over-formalises a process whose real flexibility is load-bearing. A6's discretion, the "corresponding authorities" of S3.5, and the second-TRET decision at S4.8.5 are deliberately unspecified because the people involved need room to move. A rigid SOP that closes those gaps could make the process <em>less</em> operable while looking more rigorous on paper.</p>
+<p><strong>The defence:</strong> the model marks those three points as explicitly discretionary rather than specifying them away. The parts being hardened — the ledger, the DV checklist as a value-capture instrument, the A7 arithmetic, the reason codes on exits — are the parts that carry audit exposure and where discretion buys nothing. <strong>What would change my mind:</strong> if the A3 mapping sheet is routinely overturned by the authorities at S3.5, then the mapping is advisory rather than decisive, and the whole S3 formalisation is optimising a draft nobody treats as binding.</p>
+
+</section><section aria-labelledby="10-open-questions-ranked" class="doc-section"><h2 id="10-open-questions-ranked">10. Open questions — ranked</h2>
+<p>You asked to be consulted before assumptions are baked in. These are the assumptions I refused to make.</p>
+<h3 id="blocking-the-model-cannot-be-finalised-without-these">Blocking — the model cannot be finalised without these</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>Question</th>
+<th>Why it blocks</th>
+</tr>
+</thead>
+<tbody>
+<tr class="oq-row" id="oq-1">
+<td><strong class="sid"><span class="oq">OQ-1</span></strong></td>
+<td><strong>Does the Sub-Committee sit before or after the Course Allocation Committee?</strong> Documents say Sub-Cttee 16.06 → CAC 23.06, and the board note says the CAC was convened "to facilitate the allocation of the <strong>approved</strong> courses." Your dictation says CAC → Sub-Cttee.</td>
+<td>Changes the whole of S5, the Gantt dependency chain, and which paper you draft first.</td>
+</tr>
+<tr class="oq-row" id="oq-2">
+<td><strong class="sid"><span class="oq">OQ-2</span></strong></td>
+<td><strong>Is the DoTE Course Recommendation Letter the actual origin of the EoI course list?</strong> If so, S0.1 is the true cycle trigger and your "new EoI based on changes needed" is constrained by a letter you don't author.</td>
+<td>The cycle currently has no defined start.</td>
+</tr>
+<tr class="oq-row" id="oq-5">
+<td><strong class="sid"><span class="oq">OQ-5</span></strong></td>
+<td><strong>Where does TP payment sit?</strong> Marks upload → outcome verification → invoice → disbursement is entirely absent from the account, yet it is the mechanism the board note leans on.</td>
+<td>A process model that never pays its vendors is incomplete in the most consequential place.</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="high-needed-for-a-correct-flowchart">High — needed for a correct flowchart</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>Question</th>
+</tr>
+</thead>
+<tbody>
+<tr class="oq-row" id="oq-3">
+<td><strong class="sid"><span class="oq">OQ-3</span></strong></td>
+<td>What does <strong>AD-DSTO</strong> stand for, and what is the office's exact role? It is a fund-disbursement node with two onward recipients and no other described function.</td>
+</tr>
+<tr class="oq-row" id="oq-4">
+<td><strong class="sid"><span class="oq">OQ-4</span></strong></td>
+<td><strong>Industry Visit</strong> — you list it as one of six implementation components but never describe it. When does it happen, who arranges it, who funds it, what evidence is required?</td>
+</tr>
+<tr class="oq-row" id="oq-6">
+<td><strong class="sid"><span class="oq">OQ-6</span></strong></td>
+<td>Is the <strong>two-phase EoI</strong> a standard designed contingency (re-float when coverage is short) or was 2026-27 Odd an exception? I have modelled it as a contingency branch (S1.6a).</td>
+</tr>
+<tr class="oq-row" id="oq-7">
+<td><strong class="sid"><span class="oq">OQ-7</span></strong></td>
+<td><strong>Schneider CoE, TATA Industry 4.0 Labs, TANCAM/TANSAM</strong> — do these follow this same process, or a parallel track that skips EoI/DV/CEC? They carry different commercial structures (travel allowance to institutions vs. per-student training fee). ~3,880+ students sit outside the flow as modelled.</td>
+</tr>
+<tr class="oq-row" id="oq-10">
+<td><strong class="sid"><span class="oq">OQ-10</span></strong></td>
+<td><strong>Industry Partners (IP)</strong> — the EoI invites them alongside TPs, but nothing after S1.1 mentions them. Do IPs follow the same DV → CEC → TRET path, or a different one?</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="medium-affects-rules-and-arithmetic">Medium — affects rules and arithmetic</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>Question</th>
+</tr>
+</thead>
+<tbody>
+<tr class="oq-row" id="oq-8">
+<td><strong class="sid"><span class="oq">OQ-8</span></strong></td>
+<td>Is <strong>1 trainer : 60 students</strong> per college or per district? "Per college" sets trainer demand by college count rather than student count — a materially different requirement.</td>
+</tr>
+<tr class="oq-row" id="oq-9">
+<td><strong class="sid"><span class="oq">OQ-9</span></strong></td>
+<td>Does the <strong>1.25× projection</strong> apply per district, per domain, or per district × domain? And is 1.25 a fixed policy factor or a per-cycle judgement?</td>
+</tr>
+<tr class="oq-row" id="oq-11">
+<td><strong class="sid"><span class="oq">OQ-11</span></strong></td>
+<td>At S3.5, who are the "<strong>corresponding authorities</strong>" receiving the A3 mapping? Is that sign-off distinct from the CAC, or the same decision under a different name?</td>
+</tr>
+<tr class="oq-row" id="oq-12">
+<td><strong class="sid"><span class="oq">OQ-12</span></strong></td>
+<td>What is the decision rule for <strong>conducting a second TRET vs. proceeding</strong> at S4.8.5? Currently undocumented and fully discretionary.</td>
+</tr>
+<tr class="oq-row" id="oq-15">
+<td><strong class="sid"><span class="oq">OQ-15</span></strong></td>
+<td>Is the <strong>33% revenue cap</strong> computed per semester, or across both semesters of the year combined? If annual, an Odd-semester allocation constrains the Even-semester one and the cap must be tracked cumulatively.</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="low-terminology-and-completeness">Low — terminology and completeness</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>Question</th>
+</tr>
+</thead>
+<tbody>
+<tr class="oq-row" id="oq-13">
+<td><strong class="sid"><span class="oq">OQ-13</span></strong></td>
+<td>At S7.2, TPs upload "attendance and all the other stuff" — what is the complete required upload list?</td>
+</tr>
+<tr class="oq-row" id="oq-14">
+<td><strong class="sid"><span class="oq">OQ-14</span></strong></td>
+<td>Which programme name is legally operative on work orders and certificates this cycle: <strong>Naan Mudhalvan</strong> (as all 2026-27 board papers say) or <strong>VTPT</strong>?</td>
+</tr>
+<tr class="oq-row" id="oq-16">
+<td><strong class="sid"><span class="oq">OQ-16</span></strong></td>
+<td>You wrote "ROI" in the audit context — confirm you meant <strong>RTI</strong> (Right to Information). I have modelled it as RTI.</td>
+</tr>
+</tbody>
+</table></div>
+
+</section><section aria-labelledby="11-what-this-document-is-ready-to-become" class="doc-section"><h2 id="11-what-this-document-is-ready-to-become">11. What this document is ready to become</h2>
+<p>Once <a class="oq" href="#oq-1">OQ-1</a>, <a class="oq" href="#oq-2">OQ-2</a> and <a class="oq" href="#oq-5">OQ-5</a> are closed, this model supports, without restructuring:</p>
+<ul>
+<li><strong>SOP</strong> — each <code>S*.*</code> becomes a procedure with owner, trigger, artifact, and exit criterion. The RACI writes itself from §2 and §5.</li>
+<li><strong>Gantt</strong> — S0–S5 is the critical path; the 2026-27 Odd actual dates in §3 give real durations for a first baseline.</li>
+<li><strong>Ledger / database</strong> — §6 is a schema. Four tables, one state machine, reason codes on exits.</li>
+<li><strong>Automation</strong> — ranked in §9.3: A7 headroom first, feasibility check second, assignment solver third, committee paper generation fourth (the §V7 template is stable enough to generate from the ledger).</li>
+<li><strong>Audit and RTI pack</strong> — §5's audit-critical column is the evidence index; §6.2's exit reasons are the answers.</li>
+</ul>
+
+<p><em>v0.1 · 13 Sep 2026 · Prepared from principal dictation and cross-checked against TNSDC 2026-27 Odd Semester Polytechnic governance papers.</em></p></section>
+  </main>
+</div>
+
+<footer class="foot">
+  v0.1 · 13 Sep 2026 · Prepared from principal dictation and cross-checked against TNSDC 2026-27 Odd Semester Polytechnic governance papers.
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+<script>
+(function(){
+  // ----- mermaid -----
+  if (window.mermaid) {
+    mermaid.initialize({
+      startOnLoad:false, securityLevel:"loose", theme:"base",
+      flowchart:{htmlLabels:true, curve:"basis"},
+      themeVariables:{
+        fontFamily:'"Public Sans","Segoe UI",sans-serif', fontSize:"14px",
+        primaryColor:"#FFFFFF", primaryBorderColor:"#8FA1AE", primaryTextColor:"#16232E",
+        lineColor:"#6B7B87", clusterBkg:"#F4F6F7", clusterBorder:"#D3DADF",
+        edgeLabelBackground:"#FFFFFF", noteBkgColor:"#FBF0DD", noteBorderColor:"#C9A56A"
+      }
+    });
+    mermaid.run({querySelector:"pre.mermaid"}).then(addZoom).catch(function(e){console.warn(e)});
+  } else {
+    document.querySelectorAll(".diagram").forEach(function(d){
+      var p=document.createElement("p"); p.className="diagram-note";
+      p.textContent="Diagram needs an internet connection to render. Diagram source shown below.";
+      d.prepend(p);
+    });
+  }
+
+  function addZoom(){
+    document.querySelectorAll(".diagram").forEach(function(d){
+      var svg=d.querySelector("svg"); if(!svg) return;
+      var vb=svg.viewBox && svg.viewBox.baseVal; if(!vb || vb.width < d.clientWidth*1.1) return;
+      var bar=document.createElement("div"); bar.className="diagram-tools";
+      var btn=document.createElement("button"); btn.className="zbtn"; btn.type="button";
+      btn.textContent="View full size"; btn.setAttribute("aria-pressed","false");
+      btn.addEventListener("click",function(){
+        var z=d.classList.toggle("zoomed");
+        svg.style.width = z ? vb.width+"px" : "";
+        btn.textContent = z ? "Fit to width" : "View full size";
+        btn.setAttribute("aria-pressed", z);
+      });
+      bar.appendChild(btn); d.prepend(bar);
+    });
+  }
+
+  // ----- evidence filter -----
+  var btns=[].slice.call(document.querySelectorAll(".fbtn"));
+  var clear=document.getElementById("fclear");
+  var targets=[].slice.call(document.querySelectorAll(".doc tbody tr, .doc [data-marks]"));
+  btns.forEach(function(b){
+    var k=b.dataset.k;
+    b.querySelector(".count").textContent=document.querySelectorAll(".doc .mark-"+k).length;
+    b.addEventListener("click",function(){
+      b.setAttribute("aria-pressed", b.getAttribute("aria-pressed")==="true"?"false":"true");
+      apply();
+    });
+  });
+  clear.addEventListener("click",function(){btns.forEach(function(b){b.setAttribute("aria-pressed","false")});apply();});
+  function apply(){
+    var on=btns.filter(function(b){return b.getAttribute("aria-pressed")==="true"}).map(function(b){return b.dataset.k});
+    document.body.classList.toggle("filtering", on.length>0);
+    clear.hidden = on.length===0;
+    targets.forEach(function(el){
+      var m=(el.dataset.marks||"").split(" ");
+      el.classList.toggle("hit", on.some(function(k){return m.indexOf(k)>-1}));
+    });
+    if(on.length){
+      var first=document.querySelector(".doc .hit");
+      if(first && first.getBoundingClientRect().top > window.innerHeight) first.scrollIntoView({block:"center"});
+    }
+  }
+
+  // ----- open question count -----
+  var oq=document.querySelectorAll("tr.oq-row").length;
+  if(oq) document.getElementById("oqCount").textContent=oq;
+
+  // ----- contents: scrollspy + mobile toggle -----
+  var links=[].slice.call(document.querySelectorAll(".toc a"));
+  var map={}; links.forEach(function(a){map[a.getAttribute("href").slice(1)]=a;});
+  var heads=Object.keys(map).map(function(id){return document.getElementById(id)}).filter(Boolean);
+  var io=new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){
+        links.forEach(function(a){a.classList.remove("active")});
+        map[e.target.id].classList.add("active");
+      }
+    });
+  },{rootMargin:"-70px 0px -70% 0px"});
+  heads.forEach(function(h){io.observe(h)});
+
+  var menu=document.getElementById("menuBtn");
+  menu.addEventListener("click",function(){
+    var open=document.body.classList.toggle("toc-open");
+    menu.setAttribute("aria-expanded",open);
+  });
+  links.forEach(function(a){a.addEventListener("click",function(){
+    document.body.classList.remove("toc-open"); menu.setAttribute("aria-expanded","false");
+  })});
+})();
+</script>
+</body>
+</html>
